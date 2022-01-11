@@ -4,14 +4,14 @@
 #SBATCH --output=/home/lspencer/snowcrab-OA-2022/sbatch_logs/snowcrab_concat.txt
 #SBATCH --mail-user=laura.spencer@noaa.gov
 #SBATCH --mail-type=ALL
-#SBATCH -c 4
+#SBATCH -c 10
 #SBATCH -t 1000
 
 # This script is for concatenating two data files from the same sample
-# but different lanes into one .fastq file.
+# but different lanes (two lanes) into one .fastq file.
 # It has been slightly adapted from code written by Giles Goetz
 
-BASE=/home/lspencer/snowcrab-OA-2022/raw-data
+BASE=/share/afsc/snowcrab-OA-2022/raw-data
 IN=${BASE}
 OUT=${BASE}/concat
 
