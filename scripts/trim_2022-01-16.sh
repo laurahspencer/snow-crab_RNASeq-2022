@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=snowcrab_trim
-#SBATCH --output=/home/lspencer/snowcrab-OA-2022/sbatch_logs/snowcrab_trim.txt
+#SBATCH --job-name=snowcrab_raw-trim
+#SBATCH --output=/home/lspencer/snowcrab-OA-2022/sbatch_logs/snow_trim.txt
 #SBATCH --mail-user=laura.spencer@noaa.gov
 #SBATCH --mail-type=ALL
-#SBATCH -c 8
-#SBATCH -t 1000
+#SBATCH -c 10
+#SBATCH -t 2-0:0:0
 
 # This script is for trimming raw (but concatenated) RNA-Seq data and
 # filtering for quality and length.
@@ -14,23 +14,15 @@
 module load bio/fastqc
 source /home/lspencer/venv/bin/activate
 
-IN1=/home/lspencer/snowcrab-OA-2022/raw-data/5329
-IN2=/home/lspencer/snowcrab-OA-2022/raw-data/5010
+IN=/share/afsc/snowcrab-OA-2022/raw-data/concat
 OUT=/scratch/lspencer/snowcrab-OA-2022/trimmed
-FASTQC=/home/lspencer/2022-redking-OA/fastqc/trimmed
+FASTQC=/scratch/lspencer/snowcrab-OA-2022/fastqc/trimmed
 VER=1
 
-samp1=$(ls ${IN1}/*_L004_R1_001.fastq.gz | \
+SAMPLES=$(ls ${IN}/*_R1.fastq.gz | \
 awk -F "/" '{print $NF}' | \
 awk -F "." '{print $1}' | \
 sed -e 's/_R1//')
-
-samp2=$(ls ${IN2}/*_L003_R1_001.fastq.gz | \
-awk -F "/" '{print $NF}' | \
-awk -F "." '{print $1}' | \
-sed -e 's/_R1//')
-
-SAMPLES=$($samp1 $samp2)
 
 for sample in ${SAMPLES}
 do
@@ -46,7 +38,7 @@ do
         -q 20,15 \
         -m 50 \
         --trim-n \
-        --cores=8 \
+        --cores=10 \
         ${IN}/${sample}_R1.fastq.gz \
         ${IN}/${sample}_R2.fastq.gz \
         &> ${OUT}/cutadapt.${sample}.v${VER}.log
