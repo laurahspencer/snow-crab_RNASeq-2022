@@ -6,3 +6,5 @@
 *fasta.gz
 *.fasta
 *fasta.tar
+./references/uniprot_sprot_20231025.fasta
+./references/tanner_genes_blastx.tab
