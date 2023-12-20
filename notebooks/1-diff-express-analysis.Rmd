@@ -1,0 +1,1457 @@
+---
+title: "1-diff-express-analysis"
+author: "Laura H Spencer"
+date: "10/26/2023"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+      number_sections: true
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning = F, message = F)
+```
+
+### Load libraries and source scripts 
+
+```{r, message=FALSE, warning=FALSE, results=FALSE}
+source("../references/biostats.R")
+source("../references/iLOO.R")
+`%!in%` = Negate(`%in%`)
+
+# Add all required libraries that are installed with install.packages() here
+list.of.packages <- c("RCurl", "tidyverse", "vegan", "pheatmap", "pastecs", "factoextra", "FactoMineR", "RColorBrewer", "tibble", "reshape2", "plotly", "cowplot", "clipr", "janitor", "ggpubr", "forcats", "apeglm", "car", "vsn", "devtools", "grid", "gridGraphics", "Rfast", "dendextend", "RColorBrewer", "scales", "VennDiagram", "colorspace", "edgeR", "devtools", "ggpattern", "eulerr", "Rmisc")
+
+# Add all libraries that are installed using BiocManager here
+bioconductor.packages <- c("DESeq2", "WGCNA")
+
+# # Install BiocManager if needed
+# if(!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+# 
+# Get names of all required packages that aren't installed
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+new.bioc.packages <- bioconductor.packages[!(bioconductor.packages %in% installed.packages()[, "Package"])]
+# Install all new packages
+if(length(new.packages)) install.packages(new.packages)
+# if(length(new.bioc.packages)) BiocManager::install(new.bioc.packages)
+
+# Load all required libraries
+all.packages <- c(list.of.packages, bioconductor.packages)
+lapply(all.packages, FUN = function(X) {
+  do.call("require", list(X))
+})
+
+install.packages("devtools")
+install.packages("usethis")
+require(devtools)
+# Github packages 
+install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+```
+
+```{r}
+#### Load counts and sample info (generated in the "0-Get-data.Rmd" notebook)
+load(file="../data/sample.info")
+load(file = "../results/counts")
+load(file = "../results/counts.t")
+load(file = "../results/counts.ts")
+load( file = "../references/tanner.blast")
+load(file = "../references/tanner.blast.GO")
+```
+
+## Library summary stats
+
+#### No. of fragments per sample? 
+
+```{r}
+data.frame(rowSums(counts.ts)) %>% 
+                  dplyr::rename(read.total = 1) %>% 
+                  rownames_to_column(var="sample") %>% #summary() 
+dplyr::summarise(mean=round(mean(read.total, na.rm=T)), 
+          sd=round(sd(read.total, na.rm=T)), 
+          se=round(sd/sqrt(length(sample))),
+          median=median(read.total), 
+          min=min(read.total), 
+          max=max(read.total)) %>% t() %>% as.data.frame() %>% 
+  dplyr::mutate(V1=prettyNum(V1, big.mark = ",")) %>% 
+  dplyr::rename("fragments.per.sample"="V1") #use this to average across all samples 
+```
+
+#### Did the no. of fragments per treatment differ? 
+
+##### Boxplots of the # of fragments in each sample per treatment 
+
+```{r}
+fragments <- data.frame(rowSums(counts.ts)) %>% 
+                  dplyr::rename(read.total = 1) %>% 
+                  rownames_to_column(var="sample") %>%
+    #mutate(sample=as.numeric(sample)) %>%
+  left_join(sample.info, by=c("sample"="sampleID")) %>%
+  mutate(treatment=factor(treatment, ordered = T, levels=c("ambient", "moderate_short", "moderate_long", "severe_short", "severe_long")))
+
+
+ggplotly(
+ggplot(data = fragments %>%
+         arrange(OA)) +
+           geom_bar(aes(x=sample, y=read.total, fill=treatment), stat = "identity") + 
+  ggtitle("Total # fragments by sample") + 
+             theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) + theme_minimal()) 
+```
+
+##### Statistically test whether no. of fragments / treatment differs 
+
+```{r}
+hist(log(fragments$read.total))
+shapiro.test(log(fragments$read.total))
+summary(aov(log(read.total) ~ treatment, fragments))
+TukeyHSD(aov(log(read.total) ~ treatment, fragments))
+
+anova(lm(log(read.total) ~ OA, fragments))
+anova(lm(log(read.total) ~ duration, fragments))
+anova(lm(log(read.total) ~ OA*duration, fragments))
+
+ggplot(fragments, aes(x=OA, y=read.total)) + geom_boxplot() + theme_minimal()
+ggplot(fragments, aes(x=duration, y=read.total)) + geom_boxplot() + theme_minimal()
+ggplot(fragments, aes(x=treatment, y=read.total)) + geom_boxplot() + theme_minimal()
+```
+
+#### How many samples per treatment, tank, etc?
+
+```{r}
+fragments %>% group_by(treatment) %>% tally()
+fragments %>% group_by(OA) %>% tally()
+fragments %>% group_by(duration) %>% tally()
+fragments %>% group_by(treatment) %>% tally() #%>% arrange(treatment, tank)
+```
+
+#### How many genes total in the filtered count matrix?
+
+```{r}
+prettyNum(ncol(counts.ts),big.mark = ",")
+```
+
+#### What's the average no. of genes per sample, etc.? 
+
+```{r}
+data.frame(rowSums(counts.ts != 0)) %>% 
+                  dplyr::rename(count.total = 1) %>% 
+                  rownames_to_column(var="sample") %>% 
+  summarise(mean=round(mean(count.total, na.rm=T)), 
+            sd=round(sd(count.total, na.rm=T)), 
+            se=round(sd/sqrt(length(sample))),
+            median=median(count.total, na.rm=T),
+            min=min(count.total, na.rm=T), 
+            max=max(count.total, na.rm=T)) %>% t() %>% as.data.frame() %>% 
+  mutate(V1=prettyNum(V1, big.mark = ",")) %>% 
+  dplyr::rename("genes.per.sample"="V1")
+```
+
+#### Total no. of genes identified in each sample
+
+```{r}
+#ggplotly(
+ggplot(data = data.frame(rowSums(counts.t != 0, na.rm=TRUE)) %>% 
+                  dplyr::rename(count.total = 1) %>% 
+                  rownames_to_column(var="sample")) +
+           geom_bar(aes(x=sample, y=count.total), stat = "identity") + ggtitle("Total # genes by sample") + 
+             theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())#) 
+```
+### Prep data for analyses
+
+#### Merge sample key info to count data, then sort, and generate heat map for initial inspection by treatment 
+
+```{r}
+# IMPORTANT NOTE: to use data for ALL genes, use object "counts.t". To remove low-frequency genes, use object "counts.ts" (recommended option)
+
+# merge count data with sample key, reset row names as sample names, and arrange by infection, then temperature, then day 
+counts.tk <- merge(x=sample.info[,c("sampleID", "OA", "duration", "treatment")], by.x="sampleID", y=counts.ts, by.y="row.names") %>% 
+  arrange(treatment)  %>% column_to_rownames(var="sampleID") %>% droplevels()
+save(counts.tk, file = "../results/counts.tk")
+head(counts.tk[1:24]) #check out results of merge/arrange
+```
+#### Reformat for DESeq, ensure correct sample order for 
+
+```{r}
+# NOTE: It is absolutely critical that the **columns of the count matrix** and the **rows of the column data (information about samples)** are in the same order. DESeq2 will not make guesses as to which column of the count matrix belongs to which row of the column data, these must be provided to DESeq2 already in consistent order.
+
+all(rownames(counts.tk) == counts.tk[-1:-3] %>% t() %>% colnames()) #check that rownames of untransformed matrix match column names of transformed matrix. Should print 'TRUE' 
+```
+
+```{r}
+##### If using counts which included multimapped counted fractionally, need to round to the nearest integer for DESeq2. 
+#_Not needed for gene counts produced by STAR aligner_
+
+#counts.tk <- counts.tk %>% mutate_if(is.numeric, round)
+```
+
+#### Generate DESeq dataset object 
+
+```{r}
+dds.treatment <- DESeqDataSetFromMatrix(countData = counts.tk[-1:-3] %>% t(),
+                              colData = counts.tk[,"treatment", drop=FALSE] ,
+                              design = ~ treatment)
+```
+
+#### Transform data for visualization 
+
+The variance stabilizing transformation is recommended prior to visualizing expression data and running PCA's
+
+```{r}
+vsd.treatment <- varianceStabilizingTransformation(dds.treatment, blind=FALSE)
+save(vsd.treatment, file = "../results/vsd.treatment")
+
+# Save variance-stabilization normalized gene counts x sample matrix, annotated for later use 
+counts.trans <- assay(vsd.treatment) %>% t() %>% as.matrix() %>% as.data.frame() %>% 
+  rownames_to_column(var = "sampleID") %>% 
+  left_join(sample.info[,c("sampleID", "treatment")]) %>%
+  column_to_rownames(var = "sampleID") %>% 
+  dplyr::select(treatment, everything()) %>% 
+  mutate(treatment=factor(treatment, ordered = T, 
+                          levels=c("ambient","moderate_short","moderate_long","severe_short","severe_long")))
+save(counts.trans, file = "../results/counts.trans")
+```
+
+## Unsupervised analyses 
+
+#### Heat map with top 10% most variable genes, VSD-transformed counts
+
+```{r}
+# calculate CV for each gene across all samples 
+most.variable <- assay(vsd.treatment) %>% as.data.frame() %>%
+  rownames_to_column(var = "gene") %>%
+  rowwise() %>% 
+  dplyr::mutate(
+     sd = sd(c_across(-gene)),
+     mean = mean(c_across(-gene)),
+     cv = sd/mean) %>%
+  #column_to_rownames("gene") %>%
+  arrange(desc(cv)) %>% 
+# subset top 10% of most variable genes 
+  head(n=round(0.1*nrow(assay(vsd.treatment)))) %>%
+  select(gene) %>% unlist() %>% as.vector()
+
+# Generate heat map / cluster those top 10% most variable genes - any pattern in the clustering? 
+cluster.most.variable <- pheatmap(t(assay(vsd.treatment))[,most.variable], 
+         Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, scale="column",
+                     show_colnames =FALSE, cluster_cols = FALSE, cluster_rows = TRUE,
+         annotation_colors = list(treatment=
+          c(`ambient`= "navyblue", 
+            `moderate_short`="darkgreen", `moderate_long`="yellow3",
+            `severe_short`="sienna2", `severe_long`="firebrick4")),
+         annotation_row=as.data.frame(colData(vsd.treatment)[,c("treatment"), drop=FALSE]),
+         main = "gene counts - top 10% most variable\n(VSD-transformed)")
+```
+
+### Hierarchical clustering
+
+NOTE: this tree was generated by the pheatmap function in the previous code chunk
+
+```{r}
+# Just plot hierarchical cluster, color-code sample by treatment, or by tank number
+cluster.dendo <- as.dendrogram(cluster.most.variable$tree_row) 
+plot(cluster.dendo) # bare bones dendogram
+
+# A sub tree - looking at branches
+par(cex = 1)
+plot(cluster.dendo[[1]], horiz = TRUE)
+
+order.dendrogram(cluster.dendo) # to find out the order of the sample labels 
+
+# Create a dataframe ordered the same as the dendogram for annotation purposes 
+dendo.df <- sample.info[match(cluster.most.variable$tree_row$labels, sample.info$sampleID),c("sampleID", "treatment")]
+all(dendo.df$sample == cluster.most.variable$tree_row$labels) # Should == TRUE
+
+# Create color coding vectors 
+colorCodes.treat <- c(`ambient`= "navyblue", 
+            `moderate_short`="darkgreen", `moderate_long`="yellow3",
+            `severe_short`="sienna2", `severe_long`="firebrick4")
+
+# Plot dendogram color-code by treatment
+labels(cluster.dendo) <- dendo.df$sampleID[order.dendrogram(cluster.dendo)]
+labels_colors(cluster.dendo) <- colorCodes.treat[as.character(dendo.df$treatment[order.dendrogram(cluster.dendo)])]
+plot(cluster.dendo, xlab="Sample Number", cex.lab=0.9)
+legend("topright", title = "Treatment", bty="n", legend =
+         c("ambient","moderate_short","moderate_long","severe_short","severe_long"), 
+       fill = c("navyblue","darkgreen","yellow3","sienna2", "firebrick4"))
+```
+
+#### **NOTE: Samples 194 & 137 look like outliers!** - therefore they were removed 
+
+
+## Perform PCA's
+
+```{r}
+# To view the the guts of the PlotPCA function in DESeq2, execute this code chunk. It reveals that, by default, it only uses the top 500 most influential genes to plot the PCA! 
+
+#getMethod("plotPCA","DESeqTransform")
+```
+
+### PCAs using DESeq2
+
+NOTE: Hover over points to see the sample numbers
+
+```{r}
+# Generate PCA with points color coded by pH Treatment with various number of top genes to use for principal components, selected by highest row variance  
+
+# Top 500 most influential genes
+ggplotly(
+  plotPCA(vsd.treatment, intgroup="treatment", ntop=500) +
+           ggtitle("PCA by Treatment (var-stabilizing transformed)\ntop 500 genes") +
+    geom_point(size=2, aes(text=colnames(vsd.treatment))) +
+      scale_color_manual(values=c("ambient"= "navyblue", 
+            "moderate_short"="darkgreen", "moderate_long"="yellow3",
+            "severe_short"="sienna2", "severe_long"="firebrick4")) +
+      theme_minimal()+ stat_ellipse() , tooltip = "text")
+
+# Top 2000 most influential genes
+ggplotly(
+  plotPCA(vsd.treatment, intgroup="treatment", ntop=2000) +
+           ggtitle("PCA by Treatment (var-stabilizing transformed)\ntop 2000 genes") +
+    geom_point(size=2, aes(text=colnames(vsd.treatment))) +
+      scale_color_manual(values=c("ambient"= "navyblue", 
+            "moderate_short"="darkgreen", "moderate_long"="yellow3",
+            "severe_short"="sienna2", "severe_long"="firebrick4")) +
+      theme_minimal()+ stat_ellipse() , tooltip = "text")
+
+# All genes! 
+#ggplotly(
+  plotPCA(vsd.treatment, intgroup="treatment", ntop=nrow(assay(vsd.treatment))) + 
+           ggtitle("PCA by Treatment (var-stabilizing transformed)\nall genes") + 
+    geom_point(size=3, aes(text=colnames(vsd.treatment))) + 
+      scale_color_manual(values=c("ambient"= "navyblue", 
+            "moderate_short"="darkgreen", "moderate_long"="yellow3",
+            "severe_short"="sienna2", "severe_long"="firebrick4")) +
+    theme_minimal()+ stat_ellipse() #, tooltip = "text")
+
+# PCA.data.treatment <- plotPCA(vsd.treatment, intgroup=c("treatment"), returnData=TRUE)
+# save(PCA.data.treatment, file="../results/PCA.data.treatment")
+```
+
+### Run PCAs using prcomp
+
+This enables screeplot to ID significant PCs, calculates variance, etc. 
+
+```{r, warning=F, message=F}
+#pca.princomp <- prcomp(cov(assay(vsd.pH)), scale=F) #scale=F for variance-covariance matrix
+pca.princomp <- prcomp(t(assay(vsd.treatment))) # using the same code that's under the hood of PlotPCA but using all genes 
+pca.eigenval(pca.princomp) #The Proporation of Variance = %variance 
+pc.percent <- pca.eigenval(pca.princomp)[2,1:6]*100
+screeplot(pca.princomp, bstick=TRUE) #looks like PC 1-3 are significant 
+pc.percent[1:3] %>% sum() #total variance explained by first 3 (significant) axes
+```
+
+#### Annotate PCA results
+
+```{r}
+#### Generate dataframe with prcomp results 
+tab.expr <- data.frame(sample.id = colnames(assay(vsd.treatment)),
+    EV1.all = pca.princomp$x[,1],    # the first eigenvector
+    EV2.all = pca.princomp$x[,2],    # the second eigenvector
+    EV3.all = pca.princomp$x[,3],    # the third eigenvector
+    stringsAsFactors = FALSE)
+tab.expr.annot <- left_join(tab.expr, sample.info, by=c("sample.id"="sampleID")) %>% droplevels() #add treatment info to PC results
+```
+
+#### Plot PCA 1x2
+
+```{r}
+#pdf(file="../results/PCA-1x2.pdf", height = 5.25, width = 7.5)
+ggscatter(tab.expr.annot, 
+          x="EV1.all", y="EV2.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Global gene expression PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right", legend.text=element_text(size=8), legend.title=element_text(size=9)) + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+#dev.off()
+```
+## PCA 1x3
+
+```{r}
+#pdf(file="../results/PCA-1x3.pdf", height = 5.25, width = 7.5)
+ggscatter(tab.expr.annot, 
+          x="EV1.all", y="EV3.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Global gene expression PC1xPC3") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC3 (", round(pc.percent[3], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right", legend.text=element_text(size=8), legend.title=element_text(size=9)) + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+#dev.off()
+```
+```{r}
+#pdf(file="../results/PCA-2x3.pdf", height = 5.25, width = 7.5)
+ggscatter(tab.expr.annot, 
+          x="EV2.all", y="EV3.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Global gene expression PC2xPC3") + 
+  xlab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC3 (", round(pc.percent[3], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right", legend.text=element_text(size=8), legend.title=element_text(size=9)) + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+#dev.off()
+```
+
+### Generate PCA using 10% most variable genes using prcomp
+
+```{r}
+pca.princomp.var <- prcomp(t(assay(vsd.treatment)[most.variable,])) # using the same code that's under the hood of PlotPCA 
+pca.eigenval(pca.princomp.var) #The Proporation of Variance = %variance 
+pc.percent.var <- pca.eigenval(pca.princomp.var)[2,1:5]*100
+pc.percent.var[1:3] %>% sum()
+screeplot(pca.princomp.var, bstick=TRUE) #looks like PC 1-3 are significant 
+
+tab.expr.var <- data.frame(sample.id = colnames(assay(vsd.treatment[most.variable,])),
+    EV1.all = pca.princomp.var$x[,1],    # the first eigenvector
+    EV2.all = pca.princomp.var$x[,2],    # the second eigenvector
+    EV3.all = pca.princomp.var$x[,3],    # the third eigenvector
+    stringsAsFactors = FALSE)
+#shapiro.test(pca.princomp$x) #sample size too large for shapiro test which is weird 
+#hist(pca.princomp$x) #normal? hard to say, maybe
+tab.expr.annot.var <- left_join(tab.expr.var, sample.info, by=c("sample.id"="sampleID")) %>% droplevels()
+
+# GGSCATTER with ellipses and stars - PC1 PC2
+ggscatter(tab.expr.annot.var, 
+          x="EV1.all", y="EV2.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Gene Expression PC1xPC2\n10% most variable genes") + 
+  xlab(paste("PC1 (", round(pc.percent.var[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent.var[2], digits = 1), "%)", sep="")) + 
+  labs(color="OA Treatment") + 
+  theme(legend.position = "right") + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+# GGSCATTER with ellipses and stars - PC1 PC3
+ggscatter(tab.expr.annot.var, 
+          x="EV1.all", y="EV3.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Gene Expression PC1xPC3\n10% most variable genes") + 
+  xlab(paste("PC1 (", round(pc.percent.var[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC3 (", round(pc.percent.var[3], digits = 1), "%)", sep="")) + 
+  labs(color="OA Treatment") + 
+  theme(legend.position = "right") + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+# GGSCATTER with ellipses and stars - PC2 PC3
+ggscatter(tab.expr.annot.var, 
+          x="EV2.all", y="EV3.all", col="treatment", shape="OA", size=3.5, alpha=0.85, 
+          ellipse = FALSE, star.plot = FALSE) +
+  theme_minimal() + ggtitle("Gene Expression PC2xPC3\n10% most variable genes") + 
+  xlab(paste("PC2 (", round(pc.percent.var[2], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC3 (", round(pc.percent.var[3], digits = 1), "%)", sep="")) + 
+  labs(color="OA Treatment") + 
+  theme(legend.position = "right") + 
+  scale_color_manual(name="Treatment",
+                     values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"),
+                     labels=c("ambient"= "Control",
+                              "moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure")) +
+  scale_shape_manual(guide="none", values=c("ambient"=19, "moderate"=17, "severe"=15)) + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank", shape=c(19, 17, 17, 15, 15))))
+
+```
+
+### perMANOVA - multivariate analysis of variance
+
+```{r}
+# Effect of treatment
+vsd.t <- t(assay(vsd.treatment)) %>% as.data.frame()
+perm <- adonis(vsd.t ~ treatment, data=sample.info %>% remove_rownames() %>% column_to_rownames("sampleID"), permutations = 1000, method="bray")
+
+# Pairwise comparisons
+vsd.t <- sample.info %>% dplyr::select(sampleID, OA, duration, treatment) %>% left_join(t(assay(vsd.treatment)) %>% as.data.frame() %>% rownames_to_column("sampleID"))
+
+# Clustering by OA not considering exposure time? 
+pairwise.adonis(vsd.t[,-1:-4], vsd.t$OA, perm = 1000)
+# Ambient (i.e. control) vs. moderate appear to differ in multivariate space (not considering exposure time) 
+
+# Clustering by OA considering exposure time? 
+pairwise.adonis(vsd.t[,-1:-4], vsd.t$treatment, perm = 1000)
+# Yes, ambient vs moderate_long differ, and severe_short vs moderate_long
+```
+
+## Differential Expression Analysis
+
+_This is the core DESeq2 analysis!_ 
+
+```{r, message=F, warning=F, include=F}
+##### Run the function `DESeq` to assess differential expression 
+# NOTE, could consider including 'minReplicatesForReplace=Inf' to keep DESeq2 from replacing outlier values with trimmed means. 
+## The default is for this to happen when there are more than 7 replicates. 
+
+dds.DESeq.treatment <- DESeq(dds.treatment)
+```
+
+```{r}
+# these are the treatment "levels" that will be used to run pairwise contrasts 
+levels(dds.DESeq.treatment$treatment)
+```
+
+### Identify differentially expressed genes among contrasts 
+
+```{r}
+print("Comparison: Ambient pH vs. moderate-short")
+summary(res.mod.short <- results(dds.DESeq.treatment, contrast=c("treatment", "ambient", "moderate_short"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by pH, 3C:",  sum(res.mod.short$padj < 0.05, na.rm=TRUE))
+```
+
+```{r}
+print("Comparison: Ambient pH vs. moderate-long")
+summary(res.mod.long <- results(dds.DESeq.treatment, contrast=c("treatment", "ambient", "moderate_long"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by pH, 3C:",  sum(res.mod.long$padj < 0.05, na.rm=TRUE))
+```
+
+```{r}
+print("Comparison: Ambient pH vs. severe-short")
+summary(res.sev.short <- results(dds.DESeq.treatment, contrast=c("treatment", "ambient", "severe_short"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by pH, 3C:",  sum(res.sev.short$padj < 0.05, na.rm=TRUE))
+```
+
+```{r}
+print("Comparison: Ambient pH vs. severe-long")
+summary(res.sev.long <- results(dds.DESeq.treatment, contrast=c("treatment", "ambient", "severe_long"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by pH, 3C:",  sum(res.sev.long$padj < 0.05, na.rm=TRUE))
+```
+
+#### Total number of genes analyzed 
+
+```{r}
+nrow(res.sev.long)
+```
+
+```{r}
+#### Save differential expression results to objects 
+save(res.mod.short, file = "../results/deseq2/res.mod.short")
+save(res.mod.long, file = "../results/deseq2/res.mod.long")
+save(res.sev.short, file = "../results/deseq2/res.sev.short")
+save(res.sev.long, file = "../results/deseq2/res.sev.long")
+```
+
+```{r}
+#### Subset the DESeq results for only those statistically sign. ones
+# Could also filter to only include those with abs(L2FC)>0.5, but that might filter out interesting genes - 
+diffex.mod.short <- subset(res.mod.short, padj < 0.05) # & abs(log2FoldChange)>0.5
+diffex.mod.long <- subset(res.mod.long, padj < 0.05)
+diffex.sev.short <- subset(res.sev.short, padj < 0.05)
+diffex.sev.long <- subset(res.sev.long, padj < 0.05)
+```
+
+### Examine some differentially expressed genes
+
+Plot counts
+NOTE: using the DeSeq2 function `plotCounts` plots original counts, i.e. those that are normalized, but outlier values are NOT replaced with trimmed means.  I'm really interested to see how the counts look that DESeq2 is analyzing, i.e. I want to see the outlier-replaced counts. So, I must include the argument `replaced=TRUE` in the plotCounts function.
+
+It's good to look at the gene expression value - if counts are low (e.g. less than 50 or so) that gene isn't as interesting as one with mucn larger counts! 
+
+```{r, warning=FALSE, message=F}
+# select treatments to display
+#b <- c("ambient", "moderate_short")
+b <- c("ambient", "moderate_long")
+#b <- c("ambient", "severe_short")
+#b <- c("ambient", "severe_long")
+
+# select pairwise DEGs 
+test <- 
+#  diffex.mod.short %>% as.data.frame() %>% rownames()
+  diffex.mod.long %>% as.data.frame() %>% rownames()
+#  diffex.sev.short %>% as.data.frame() %>% rownames()
+#  diffex.sev.long %>% as.data.frame() %>% rownames()
+
+# Plot genes using Uniprot IDs to examine gene function if desired! 
+test1 <- counts.annot.tanner %>%
+#  filter(spid %in% c("P49285")) #could specify a gene in the dataset if desired! 
+   filter(gene_id %in% test)
+
+for (i in 1:nrow(test1[1:25,])) { # here I subset the DEG list to only plot 25 genes - can adjust this number! 
+a <-  plotCounts(dds.DESeq.treatment, gene=test1$gene_id[i], intgroup=c("treatment"), replaced = TRUE, returnData = TRUE) %>%
+  rownames_to_column("sampleID") %>%
+  left_join(sample.info[,c("sampleID", "treatment")]) %>%
+  filter(treatment %in% b) #%>%
+  #mutate(treatment=fct_relevel(treatment, c("3_amb", "6_amb", "10_amb", "3_low", "6_low", "10_low"))) %>%
+  #mutate(ph=as.factor(case_when(ph=="amb" ~ "Ambient pCO2", TRUE ~ "High pCO2")))
+
+print(
+  ggplot(a,
+       aes(x=treatment, y=count, color=treatment, label=sampleID)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(size=2.5, position=position_jitter(w = 0.15,h = 0)) +
+    #geom_text(size=3.5, position=position_jitter(w = 0.15,h = 0)) +
+    theme_bw() +
+    ggtitle(str_wrap(test1$protein_names[i])) +
+    theme(axis.title.x = element_blank(), plot.title = element_text(hjust = 0.5, size=10), legend.position = "none") +
+   scale_color_manual(name="Treatment", values=c("ambient"= "navyblue",
+                              "moderate_short"="darkgreen",
+                              "moderate_long"="yellow3",
+                              "severe_short"="sienna2",
+                              "severe_long"="firebrick4"))) #+ 
+  # facet_wrap(~ph))
+}
+```
+
+### Examine potential influence of outliers 
+
+Inspect Cook's distances for all genes. 
+
+```{r}
+par(mar=c(8,5,2,2))
+boxplot(log10(assays(dds.DESeq.treatment)[["cooks"]]), range=0, las=2)
+```
+#### Identify outliers using iLOO 
+
+DESeq2 has integrated outlier detection. But, after inspecting DEG's, there do appear to be a few influenced by outlier samples. So, I also perform outlier detection using the iterative Leave-One-Out method (iLOO) and script from [George et al. 2015](https://doi.org/10.1371/journal.pone.0125224), see [iLOO.R script](../references/iLOO.R)
+
+Note: The function iLOO requires an input  matrix, which represents a matrix of read counts for a treatment or homogeneous group containing   samples and  features. iLOO returns a  matrix, where only the outlier read counts are present (all non-outlier values have been NA’ed). 
+
+```{r}
+#sample.info$treatment %>% levels()
+
+# Create vectors of sample IDs per treatment
+samples.ambient <- (sample.info[c("sample", "treatment")] %>% filter(treatment=="ambient"))$sample
+samples.moderate_long <- (sample.info[c("sample", "treatment")] %>% filter(treatment=="moderate_long"))$sample
+samples.moderate_short <- (sample.info[c("sample", "treatment")] %>% filter(treatment=="moderate_short"))$sample
+samples.severe_long <- (sample.info[c("sample", "treatment")] %>% filter(treatment=="severe_long"))$sample
+samples.severe_short <- (sample.info[c("sample", "treatment")] %>% filter(treatment=="severe_short"))$sample
+
+# Create vector of all DEGs identified among any contrast 
+degs <- unique(c(rownames(diffex.mod.short),rownames(diffex.mod.long),rownames(diffex.sev.short), rownames(diffex.sev.long)))
+length(degs)
+
+# Extract gene counts that have outliers replaced with trimmed means, and filter for DEGs
+degs.counts <- assays(dds.DESeq.treatment)[["replaceCounts"]] %>% as.data.frame() %>% rownames_to_column("gene") %>% filter(gene %in% degs)
+
+# Extract counts for 
+counts.ambient <- degs.counts %>% select(gene, all_of(samples.ambient)) %>% column_to_rownames("gene")
+counts.moderate_long <- degs.counts %>% select(gene, all_of(samples.moderate_long)) %>% column_to_rownames("gene")
+counts.moderate_short <- degs.counts %>% select(gene, all_of(samples.moderate_short)) %>% column_to_rownames("gene")
+counts.severe_long <- degs.counts %>% select(gene, all_of(samples.severe_long)) %>% column_to_rownames("gene")
+counts.severe_short <- degs.counts %>% select(gene, all_of(samples.severe_short)) %>% column_to_rownames("gene")
+
+# Run the iterative Leave-One-Out function on gene counts for each treatment 
+iLOO.ambient <- iLOO(counts.ambient)
+iLOO.moderate_long <- iLOO(counts.moderate_long)
+iLOO.moderate_short <- iLOO(counts.moderate_short)
+iLOO.severe_long <- iLOO(counts.severe_long)
+iLOO.severe_short <- iLOO(counts.severe_short)
+
+# find samples with lots of outliers in DEG lists 
+iLOO.ambient %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene) %>% filter(!is.na(value)) %>%
+  mutate(name=as.factor(name)) %>%
+  filter(gene %in% c(rownames(diffex.mod.short), rownames(diffex.mod.long),
+                     rownames(diffex.sev.short), rownames(diffex.sev.long))) %>% 
+  group_by(name) %>% tally() %>% arrange(desc(n))
+
+iLOO.moderate_long %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene) %>% filter(!is.na(value)) %>%
+  mutate(name=as.factor(name)) %>%
+  filter(gene %in% c(rownames(diffex.mod.long))) %>% 
+  group_by(name) %>% tally() %>% arrange(desc(n))
+
+iLOO.moderate_short %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene) %>% filter(!is.na(value)) %>%
+  mutate(name=as.factor(name)) %>%
+  filter(gene %in% c(rownames(diffex.mod.short))) %>%
+  group_by(name) %>% tally() %>% arrange(desc(n))
+
+iLOO.severe_short %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene) %>% filter(!is.na(value)) %>%
+  mutate(name=as.factor(name)) %>%
+  filter(gene %in% c(rownames(diffex.sev.short))) %>%
+  group_by(name) %>% tally() %>% arrange(desc(n))
+
+iLOO.severe_long %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene) %>% filter(!is.na(value)) %>%
+  mutate(name=as.factor(name)) %>%
+  filter(gene %in% c(rownames(diffex.sev.long))) %>% 
+  group_by(name) %>% tally() %>% arrange(desc(n))
+```
+
+#### Generate lists of degs that have an outlier in at least one sample
+
+```{r}
+# Ambient vs. moderate-short
+(outs.diffex.mod.short <- full_join(
+  iLOO.ambient[rowSums(is.na(iLOO.ambient)) != ncol(iLOO.ambient), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.mod.short)),
+
+iLOO.moderate_short[rowSums(is.na(iLOO.moderate_short)) != ncol(iLOO.moderate_short), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.mod.short)),
+by="gene"))
+
+# Ambient vs. moderate-long
+(outs.diffex.mod.long <- full_join(
+  iLOO.ambient[rowSums(is.na(iLOO.ambient)) != ncol(iLOO.ambient), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.mod.long)),
+
+iLOO.moderate_long[rowSums(is.na(iLOO.moderate_long)) != ncol(iLOO.moderate_long), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.mod.long)),
+by="gene"))
+
+# Ambient vs. severe-short
+(outs.diffex.sev.short <- full_join(
+  iLOO.ambient[rowSums(is.na(iLOO.ambient)) != ncol(iLOO.ambient), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.sev.short)),
+
+iLOO.severe_short[rowSums(is.na(iLOO.severe_short)) != ncol(iLOO.severe_short), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.sev.short)),
+by="gene"))
+
+# Ambient vs. secere-short
+(outs.diffex.sev.long <- full_join(
+  iLOO.ambient[rowSums(is.na(iLOO.ambient)) != ncol(iLOO.ambient), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.sev.long)),
+
+diffex.sev.long[rowSums(is.na(diffex.sev.long)) != ncol(diffex.sev.long), ] %>% 
+  as.data.frame() %>% rownames_to_column("gene") %>%
+  filter(gene %in% rownames(diffex.sev.long)),
+by="gene"))
+```
+
+#### How many genes are going to be removed due to outlier effects?
+
+```{r}
+c(outs.diffex.mod.short$gene, 
+  outs.diffex.mod.short$gene,
+  outs.diffex.sev.short$gene,
+  outs.diffex.sev.long$gene) %>% unique() %>% length()
+```
+
+#### Generate final list of DEGs that will be used for subsequent analyses & results! 
+
+Remove genes from DEG lists that contain iLOO-identified outliers from DEG objects, and save to file. 
+
+```{r}
+(diffex.mod.short.filt <- subset(diffex.mod.short, rownames(diffex.mod.short) %!in% c(outs.diffex.mod.short$gene)))
+(diffex.mod.long.filt <- subset(diffex.mod.long, rownames(diffex.mod.long) %!in% c(outs.diffex.mod.long$gene)))
+(diffex.sev.short.filt <- subset(diffex.sev.short, rownames(diffex.sev.short) %!in% c(diffex.sev.short$gene)))
+(diffex.sev.long.filt <- subset(diffex.sev.long, rownames(diffex.sev.long) %!in% c(diffex.sev.long$gene)))
+
+save(diffex.mod.short.filt, file = "../results/deseq2/diffex.mod.short.filt")
+save(diffex.mod.long.filt, file = "../results/deseq2/diffex.mod.long.filt")
+save(diffex.sev.short.filt, file = "../results/deseq2/diffex.sev.short.filt")
+save(diffex.sev.long.filt, file = "../results/deseq2/diffex.sev.long.filt")
+```
+
+### Summary stats for the number of Differentially Expressed Genes (DEGs)
+
+#### Bar plot of the number of DEGs identified in each contrast 
+
+```{r}
+# write simple function to return the name of an object as a string
+
+# Here is a list containing all DEG sets - this will be used in subsequent code chunks, too! 
+degs <- list(
+diffex.mod.short.filt,
+diffex.mod.long.filt, 
+diffex.sev.short.filt, 
+diffex.sev.long.filt)
+
+names(degs) <- c("Moderate OA - Short", "Moderate OA - Long", 
+                 "Severe OA - Short", "Severe OA - Long")
+
+n.degs <- data.frame(matrix(NA, nrow = length(degs), ncol = 3))
+names(n.degs) <- c("contrast", "n.degs", "perc")
+for (i in (1:length(degs))) {
+  n.degs[i,1] <- names(degs[i])
+  n.degs[i,2] <- nrow(degs[[i]])
+  n.degs[i,3] <- 100*round(nrow(degs[[i]])/ncol(counts.ts), digits = 3)
+}
+
+n.degs$contrast <- factor(n.degs$contrast, levels=n.degs$contrast, ordered = T)
+
+save(degs, file = "../results/deseq2/degs")
+```
+
+Barplot of the number of DEGs 
+
+```{r}
+# single stressors vs. multiple stressors 
+#pdf(file="../results/deseq2/DEGs_barplot_single-vs-double-stressor.pdf", height = 2, width = 7)
+ggplot(n.degs, 
+       # %>% 
+       #   filter(contrast %in% c("Amb vs. Low pH @6C",
+       #                          "3 vs. 6C @Amb pH", "6 amb vs. 3C low",
+       #                          "6 vs. 10C @Amb pH", "6 amb vs. 10 low")) %>%
+       #   mutate(effect_of=case_when(
+       #     grepl("Amb vs. Low pH @6C", contrast) ~ "High pCO2",
+       #     grepl("3 vs. 6C", contrast) ~ "Cold temperature",
+       #     grepl("6 amb vs. 3C low", contrast) ~ "Cold temperature + High pCO2",
+       #     grepl("6 amb vs. 10 low", contrast) ~ "Warm temperature + High pCO2",
+       #     grepl("6 vs. 10C", contrast) ~ "Warm temperature")) %>% 
+       #  mutate(effect_of=fct_relevel(effect_of,
+       #     c("Cold temperature + High pCO2", "Cold temperature",
+       #       "Warm temperature + High pCO2", "Warm temperature",
+       #       "High pCO2"))), 
+       aes(x=contrast, y=n.degs, fill=contrast)) + 
+  geom_bar(alpha=0.8, stat = "identity", color="gray20", size=0.1) +
+  geom_text(hjust=-0.1, size=3.5, aes(label=paste(comma(n.degs), " (", perc, "%)", sep=""))) + 
+  xlab("Contrast") + ylab("Number Differentially Expressed Genes (% of all genes)") + 
+  xlab(NULL) + ylab(NULL) + coord_flip() + ggtitle("Number Differentially Expressed Genes (% of all genes)") +
+  theme_minimal() + ylim(c(0,2150)) + 
+  theme(legend.position = "none", plot.title = element_text(size = 10)) +
+  scale_fill_manual(name="Treatment",
+                     values=c("Moderate OA - Short"="darkgreen",
+                              "Moderate OA - Long"="yellow3",
+                              "Severe OA - Short"="sienna2",
+                              "Severe OA - Long"="firebrick4"),
+                     labels=c("Moderate OA - Short"="pH 7.8, Short Exposure",
+                              "Moderate OA - Long"="pH 7.8, Long Exposure",
+                              "Severe OA - Short"="pH 7.5, Short Exposure",
+                              "Severe OA - Long"="pH 7.5, Long Exposure")) +
+  guides(fill=guide_legend(nrow=3,byrow=TRUE,reverse=TRUE)) 
+#dev.off()
+```
+
+Regenerate barplot for paper (Figure 3) with the number of upregulated / downregualted DEGs by treatment 
+
+```{r}
+# summary(res.mod.short)
+# summary(res.mod.long)
+# summary(res.sev.short)
+# summary(res.sev.long)
+degs.updown <- list(
+diffex.mod.short.filt %>% data.frame() %>% filter(log2FoldChange > 0),
+diffex.mod.short.filt %>% data.frame() %>% filter(log2FoldChange < 0),
+diffex.mod.long.filt %>% data.frame() %>% filter(log2FoldChange > 0),
+diffex.mod.long.filt %>% data.frame() %>% filter(log2FoldChange < 0),
+diffex.sev.short.filt %>% data.frame() %>% filter(log2FoldChange > 0),
+diffex.sev.short.filt %>% data.frame() %>% filter(log2FoldChange < 0),
+diffex.sev.long.filt %>% data.frame() %>% filter(log2FoldChange > 0),
+diffex.sev.long.filt %>% data.frame() %>% filter(log2FoldChange < 0))
+```
+
+```{r}
+names(degs.updown) <- c("Moderate OA - Short", "Moderate OA - Short", 
+                        "Moderate OA - Long", "Moderate OA - Long",
+                        "Severe OA - Short", "Severe OA - Short",
+                        "Severe OA - Long", "Severe OA - Long")
+
+n.degs.updown <- data.frame(matrix(NA, nrow = length(degs.updown), ncol = 3))
+names(n.degs.updown) <- c("stressor", "n.degs", "perc")
+for (i in (1:length(degs.updown))) {
+  n.degs.updown[i,1] <- names(degs.updown[i])
+  n.degs.updown[i,2] <- nrow(degs.updown[[i]])
+  n.degs.updown[i,3] <- 100*round(nrow(degs.updown[[i]])/ncol(counts.ts), digits = 2)
+}
+
+n.degs.updown <- n.degs.updown %>%
+  mutate(stressor=factor(stressor, levels=
+                           c("Moderate OA - Short", "Moderate OA - Long", 
+                 "Severe OA - Short", "Severe OA - Long")),
+         response=rep(c("up", "down"), times=4))
+
+# Barplot with no. of DEGs by single stressors vs. multiple stressors, including up/down regulation 
+#pdf(file="../results/deseq2/DEGs_barplot_single-vs-double-stressor-up-down.pdf", height = 2, width = 7)
+ggplot(n.degs.updown, 
+       aes(x=stressor, y=n.degs, fill=stressor)) + 
+  geom_bar_pattern(aes(pattern=response), alpha=0.75, stat = "identity", color="gray20", size=0.05,
+                   pattern_fill="black", pattern_alpha=0.2, pattern_density=0.01, pattern_spacing=0.025) +
+  xlab("Contrast") + ylab("Number Differentially Expressed Genes (% of all genes)") + 
+  xlab(NULL) + ylab(NULL) + coord_flip() + ggtitle("Number Differentially Expressed Genes (% of all genes)") +
+  theme_pubr() + scale_y_continuous(label=comma, limits = c(0,2000)) +
+  theme(legend.position = "none", plot.title = element_text(size = 10)) +
+  scale_fill_manual(name="Treatment",
+                     values=c("Moderate OA - Short"="darkgreen",
+                              "Moderate OA - Long"="yellow3",
+                              "Severe OA - Short"="sienna2",
+                              "Severe OA - Long"="firebrick4"),
+                     labels=c("Moderate OA - Short"="pH 7.8, Short Exposure",
+                              "Moderate OA - Long"="pH 7.8, Long Exposure",
+                              "Severe OA - Short"="pH 7.5, Short Exposure",
+                              "Severe OA - Long"="pH 7.5, Long Exposure")) +
+  scale_pattern_manual(values = c("stripe","none")) +
+  guides(fill=guide_legend(nrow=3,byrow=TRUE,reverse=TRUE)) 
+#dev.off()
+
+```
+
+### Heat maps of DEGs 
+
+#### Single heatmap with all DEGs among any treatment 
+
+```{r}
+# Generate counts matrix With DEGs among any treatment 
+
+diffex.counts <- subset(assay(vsd.treatment), rownames(dds.DESeq.treatment) %in% unique(c(rownames(diffex.mod.short.filt),rownames(diffex.mod.long.filt),
+         rownames(diffex.sev.short.filt), rownames(diffex.sev.long.filt))))
+
+# Create a dataframe to annotate heatmap with treatments 
+dds.df <- sample.info[match(colnames(diffex.counts), 
+                               sample.info$sampleID),c("sampleID", "treatment")] %>%
+  remove_rownames() %>% column_to_rownames(var = "sampleID")
+
+# Make sure treatment order is correct
+all(colnames(diffex.counts) == rownames(dds.df)) #double check that samples are still in same order 
+
+# All DEGs among any pH treatment (within temperatures)
+pheatmap(diffex.counts, cluster_rows=TRUE, cluster_cols=FALSE,
+         show_rownames=FALSE, na.rm=TRUE, annotation_colors = list(treatment=
+             c("ambient"= "navyblue", "moderate_short"="darkgreen",
+                       "moderate_long"="yellow3","severe_short"="sienna2",
+                      "severe_long"="firebrick4")),
+         scale="row", main = "Differentially expressed genes (DEGs) among any pH treatment", 
+         annotation_col=dds.df[,"treatment", drop=FALSE], fontsize = 8,
+         #cutree_rows = 2,  
+         border_color=F)
+```
+
+### Venn Diagrams of DEGs by pairwise contrast
+
+```{r, include=F, echo=F, message=F}
+`Moderate OA - Short` <- row.names(degs$`Moderate OA - Short`)
+`Moderate OA - Long`  <- row.names(degs$`Moderate OA - Long`)
+`Severe OA - Short` <- row.names(degs$`Severe OA - Short`)
+`Severe OA - Long` <- row.names(degs$`Severe OA - Long`)
+
+venn.stressors <- data.frame(dat = 
+             unique(c(`Moderate OA - Short`, `Moderate OA - Long`,
+                      `Severe OA - Short`, `Severe OA - Long`))) %>%
+  mutate(`Moderate OA - Short` = dat %in% `Moderate OA - Short`,
+         `Moderate OA - Long` = dat %in% `Moderate OA - Long`,
+         `Severe OA - Short` = dat %in% `Severe OA - Short`,
+         `Severe OA - Long` = dat %in% `Severe OA - Long`) %>%
+  select(-dat) %>%
+  euler()
+
+#pdf(file="../results/deseq2/venn.pdf", height = 5.2, width = 6)
+eulerr:::plot.euler(venn.stressors, counts = T, quantities = T, 
+                      legend = T, edges=F, fontzie=8,
+                      font=1, cex=1, alpha=0.65,
+                      fills=list(fill=c("#428C42","#DBDB33", "#FF9772", "#BB4D4D")))
+#dev.off()
+
+# lighten("darkgreen", amount = .25)
+# lighten("yellow3", amount = .25)
+# lighten("sienna2", amount = .25)
+# lighten("firebrick4", amount = .25)
+```
+
+###  DAVID enrichment analysis
+
+It is a little clunky, but the DAVID functional analysis tool is one of the best ways to perform enrichment analysis (that I have found to date). To use, you copy a list of Uniprot IDs (or other gene identifier) to clipboard, then paste it into their tool. You then do the same for all genes in the analysis, providing an accurate background list of genes.  Here is code to copy all genes, then upregulated and downregulated DEGs identified by each contrast.
+
+#### GENERATE LIST OF DEGS WITH ABS(L2FC)>0.5 (all DEGs, not up.down)
+
+```{r, include=F, echo=F, message=F}
+names(degs)
+
+# BACKGROUND - all genes submitted to DESeq2 analysis 
+enrich.background <- res.mod.long %>% as.data.frame() %>% rownames_to_column("gene_id") %>%
+  left_join(tanner.blast.GO %>% dplyr::select(gene_id, gene_ontology_i_ds, spid, protein_names, protein_names), by = "gene_id") %>%
+  dplyr::select(spid) %>% na.omit() %>% unlist() %>% as.vector()
+
+# ------- "Effect of Moderate OA, Short-term exposure"
+print(paste("DEGs, ", names(degs[1])))
+enrich.mod.short <- degs[1] %>% as.data.frame() %>% rownames_to_column("gene_id") %>%
+  filter(abs(select(., contains("log2FoldChange")))>0.5) %>% #filter for genes with abs(L2FC)>0.5
+  left_join(tanner.blast.GO %>% dplyr::select(gene_id, gene_ontology_i_ds, spid, protein_names), by = "gene_id")
+
+# ------- "Effect of Moderate OA - Long exposure"
+print(paste("DEGs, ", names(degs[2])))
+enrich.mod.long <- degs[2] %>% as.data.frame() %>% rownames_to_column("gene_id") %>%
+  filter(abs(select(., contains("log2FoldChange")))>0.5) %>% #filter for genes with abs(L2FC)>0.5
+  left_join(tanner.blast.GO %>% dplyr::select(gene_id, gene_ontology_i_ds, spid, protein_names), by = "gene_id")
+
+# ------- "Effect of Severe OA - Short exposure"
+print(paste("DEGs, ", names(degs[3])))
+enrich.sev.short <- degs[3] %>% as.data.frame() %>% rownames_to_column("gene_id") %>%
+  filter(abs(select(., contains("log2FoldChange")))>0.5) %>% #filter for genes with abs(L2FC)>0.5
+  left_join(tanner.blast.GO %>% dplyr::select(gene_id, gene_ontology_i_ds, spid, protein_names), by = "gene_id")
+
+# ------- "Effect of Severe OA - Long exposure"
+print(paste("DEGs, ", names(degs[4])))
+enrich.sev.long <- degs[4] %>% as.data.frame() %>% rownames_to_column("gene_id") %>%
+  filter(abs(select(., contains("log2FoldChange")))>0.5) %>% #filter for genes with abs(L2FC)>0.5
+  left_join(tanner.blast.GO %>% dplyr::select(gene_id, gene_ontology_i_ds, spid, protein_names), by = "gene_id")
+```
+
+```{r}
+DEGs.4David <- list(
+  
+  "moderate_short" = 
+    enrich.mod.short %>%
+    dplyr::select(spid) %>% na.omit() %>% unlist() %>% as.vector(),
+  
+  "moderate_long" = 
+    enrich.mod.long %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+
+    "severe_short" = 
+    enrich.sev.short %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "severe_long" = 
+    enrich.sev.long %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector()
+
+  ) 
+
+# Write tab-delimited file with each column containing Uniprot IDs for each set of DEGs 
+write_delim(x = plyr::ldply(DEGs.4David, rbind) %>% t() %>% as.data.frame(), delim = "\t", col_names = F, na="", 
+            file = "../results/deseq2/DEGs-4David.txt")
+            
+# BACKGROUND - all genes submitted to DESeq2 analysis 
+enrich.background %>% write_clip(allow_non_interactive = TRUE)
+```
+
+#### Run DAVID analysis in browser!  
+Details here. 
+
+#### Read in DAVID Enrichment Analysis results 
+
+NOTE: outside of R I created a .tab file with the first column containing file names for enrichment results, and second column containing the contrast + which treatment was upregulated (for grouping in R). 
+Example: the following row refers to the file contains enrichment results for genes upregulated in 10C in the contrast 6C vs. 10C at Low pH
+
+```{r, warning=F, message=F}
+#### Read in enriched biological functions for all contrasts
+
+filenames <- read_delim(file="../results/deseq2/GO_filenames.txt", delim = "\t", col_names = c("filename", "gene_set"))
+file_list <- vector(mode = "list", length = nrow(filenames))
+names(file_list) <- c(filenames$gene_set)
+
+for (i in 1:nrow(filenames)) {
+    file_list[[i]] <- data.frame(read_delim(file=paste("../results/deseq2/", filenames[i,"filename"], sep=""), delim = "\t"))}
+
+
+david <- bind_rows(file_list, .id = "gene_set") %>% clean_names() %>%  # Bind dataframe for each gene_set together
+    #filter(category=="GOTERM_BP_DIRECT") %>%
+    filter(p_value<0.05) %>%
+    dplyr::rename(percent=x) %>%
+    separate(term, into = c("term", "process"), sep = "~") %>%
+    separate(gene_set, sep = "_", into = c("OA", "duration"), remove = F) %>%
+    mutate(treatment=factor(gene_set, ordered = TRUE, levels=c("moderate_short","moderate_long", "severe_short", "severe_long")),
+           response=as.factor(OA), duration=as.factor(duration)) %>% 
+  tidyr::complete(OA, duration, category) # add rows for gene_sets that are missing from dataframe
+
+save(david, file="../results/deseq2/david")
+```
+
+#### Copy DAVID results (Uniprot Kewords and Gene Ontology terms) to clipboard to paste into Google Spreadsheet
+
+```{r}
+# Uniprot keywords
+david %>%
+  filter(p_value<0.05) %>%
+  filter(category=="UP_KW_BIOLOGICAL_PROCESS") %>%
+  arrange(response, stress, p_value) %>%
+  mutate_at(c("p_value", "fdr"), funs(signif(.,2))) %>%
+  dplyr::select(response, stress, term, process, count, p_value, fdr, genes) %>%
+  write_clip()
+
+# Gene Ontology terms
+david %>%
+  filter(p_value<0.05) %>%
+  filter(category=="GOTERM_BP_DIRECT") %>%
+  arrange(response, stress, p_value) %>%
+  mutate_at(c("p_value", "fdr"), funs(signif(.,2))) %>%
+  dplyr::select(response, stress, term, process, count, p_value, fdr, genes) %>%
+  write_clip()
+```
+
+### DAVID enrichment analysis results figure, all DEGs for each treatment (not separated by up/down-regulated processes)
+
+```{r}
+#pdf(file="../results/deseq2/KW-bubble.pdf", height = 3.05, width = 4)
+
+david %>% #View() 
+  #filter(count>=3) %>% # use this to filter for processes that have at minimum n genes
+  filter(p_value<0.05) %>% #filter enrichment results for p-value
+
+  # Option 1: Use this line for gene ontology biological processes  
+  filter(category=="GOTERM_BP_DIRECT") %>%
+
+  # Option 2: Use this line for Uniprot Keywords
+  #filter(category=="UP_KW_BIOLOGICAL_PROCESS") %>%
+    
+    # Can filter for other options in the "category" column, but might need to adjust the y= in the ggplot(aes). 
+    # For example would need to use y=term for KEGG_PATHWAY
+
+  group_by(treatment, genes, count) %>%
+  dplyr::summarise(p_value=min(p_value)) %>% distinct() %>% ungroup() %>% #for rows with duplicate grouping variabes, select one with lowest p-value
+  left_join(david %>% 
+              dplyr::select(treatment, category, term, process, count, percent, p_value, fold_enrichment, fdr, genes), 
+            by = c("treatment", "genes", "p_value", "count")) %>%  #re-add data
+#  ungroup() %>% arrange(stress, response, p_value) %>% group_by(stress, response) %>% dplyr::slice(1:15) %>%
+#  filter(response=="Upregulated") %>% 
+
+  ungroup() %>% arrange(treatment, p_value) %>%
+  mutate(process = factor(process, rev(unique(process)), ordered = TRUE)) %>%
+
+ggplot(aes(y = process, x=treatment, col=treatment)) + 
+  geom_point(alpha=0.65, aes(size=-log10(p_value))) + #size=count,  alpha=p_value, 
+ facet_wrap(~category,scales="free", nrow = 2) +
+  scale_color_manual(name="Treatment",
+                     values=c("moderate_short"=lighten("darkgreen", 0.25),
+                              "moderate_long"=lighten("yellow3", 0.25),
+                              "severe_short"=lighten("sienna2"),
+                              "severe_long"=lighten("firebrick4")),
+                     labels=c("moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure"),
+                     guide = guide_legend(override.aes = list(size=4))) +
+  scale_size("-Log10 P-value", range = c(2,8), #breaks = c(2, 5, 10),
+             guide = guide_legend(override.aes = list(col="gray50"))) +
+  scale_x_discrete(drop=T) + #Do drop empty factors for temperature contrasts
+  theme_cleveland() + 
+  theme(
+        legend.position = "right", 
+        axis.text.x=element_blank(),
+        axis.title.x=element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y=element_text(size=7.25), 
+        plot.title = element_text(size=8),
+        legend.text=element_text(size=6), 
+        legend.title = element_text(size=6),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  ggtitle("Enriched Biological Processes")
+#dev.off()
+```
+
+#### Re-run DAVID enrichment analysis on genes that are expressed higher ("upregulated") and lower ("downregulated") in each treatment 
+
+First, determine which log-fold change (LFC) direction (>0 or <0) refers to higher/lower expression for treatments in each contrast
+
+```{r}
+test <- ((
+#  enrich.mod.short %>% 
+#  enrich.mod.long %>% 
+#  enrich.sev.short %>% 
+  enrich.sev.long %>% 
+    
+#    filter(select(., contains("log2FoldChange"))>.5))$gene_id)
+    filter(select(., contains("log2FoldChange"))<(-0.5)))$gene_id)
+
+# Here are treatments 
+# "ambient"        "moderate_long"  "moderate_short" "severe_long"    "severe_short"  
+
+a <- c("ambient", "moderate_short")
+c <- data.frame(gene=character(), treatment=character(), mean=numeric())
+d <- list()
+
+for (i in 1:length(test)) {
+b <-  plotCounts(dds.DESeq.treatment, gene=test[i], intgroup=c("treatment"), replaced = TRUE, returnData = TRUE) %>%
+  rownames_to_column("sampleID") %>%
+  left_join(sample.info[,c("sampleID", "treatment")]) %>%
+  filter(treatment %in% a)
+
+c[1:2,1] <- test[i]
+c[1:2,2:3] <- summarySE(measurevar = "count", groupvars = "treatment", data = b)[,c("treatment", "count")] %>% 
+  mutate(treatment=as.character(treatment))
+
+d[[i]] <- c
+}
+
+bind_rows(d, .id = "i") %>% 
+  mutate(treat.num=factor(treatment, levels = a, ordered = T),
+         gene=as.factor(gene)) %>%
+  ggplot(aes(x=treatment, y=log(mean, base = 2), group=gene)) + geom_line(size=.25, color="gray50") +
+  theme_minimal() + 
+  #scale_x_continuous(breaks=c(1,2), labels=a) +
+  theme(axis.title.x = element_blank(), plot.title = element_text(size=10), axis.text.x = element_text(hjust = 0.2))
+
+# RESULTS
+# enrich.mod.short - LFC > 0.5 - LOWER IN OA
+# enrich.mod.short - LFC < (-0.5) - HIGHER IN OA
+# enrich.mod.long - LFC > 0.5 - LOWER IN OA
+# enrich.mod.long - LFC < (-0.5) - HIGHER IN OA
+# enrich.sev.short - LFC > 0.5 - LOWER IN OA
+# enrich.sev.short - LFC < (-0.5) - HIGHER IN OA
+# enrich.sev.long - LFC > 0.5 - LOWER IN OA
+# enrich.sev.long - LFC < (-0.5) - HIGHER IN OA
+```
+
+### Generate .tab input file for DAVID enrichmetn analysis 
+This file lists DEGs that are upregulated/downregulated in response to each treatment for DAVID enrichment analysis
+
+```{r}
+# RESULTS
+
+DEGs.updown.4David <- list(
+  
+  "moderate_short_downregulated" = 
+    # enrich.mod.short - LFC > 0.5 - LOWER IN OA
+    enrich.mod.short %>%
+    filter(dplyr::select(., contains("log2FoldChange"))>0.5) %>%
+    dplyr::select(spid) %>% na.omit() %>% unlist() %>% as.vector(),
+  
+  "moderate_short_upregulated" =  
+    # enrich.mod.short - LFC < (-0.5) - HIGHER IN OA
+    enrich.mod.short %>%
+    filter(dplyr::select(., contains("log2FoldChange"))<(-0.5)) %>% 
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(), 
+
+  "moderate_long_downregulated" = 
+    # enrich.mod.long - LFC > 0.5 - LOWER IN OA
+    enrich.mod.long %>%
+    filter(dplyr::select(., contains("log2FoldChange"))>0.5) %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "moderate_long_upregulated"  =
+    # enrich.mod.long - LFC < (-0.5) - HIGHER IN OA
+    enrich.mod.long %>%
+    filter(dplyr::select(., contains("log2FoldChange"))<(-0.5)) %>% 
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "severe_short_downregulated" = 
+    # enrich.sev.short - LFC > 0.5 - LOWER IN OA
+    enrich.sev.short %>%
+    filter(dplyr::select(., contains("log2FoldChange"))>0.5) %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "severe_short_upregulated" = 
+    # enrich.sev.short - LFC < (-0.5) - HIGHER IN OA
+    enrich.sev.short %>%
+     filter(dplyr::select(., contains("log2FoldChange"))<(-0.5)) %>% 
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "severe_long_downregulated" = 
+    # enrich.sev.long - LFC > 0.5 - LOWER IN OA
+    enrich.sev.long %>%
+    filter(dplyr::select(., contains("log2FoldChange"))>0.5) %>%
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector(),
+  
+  "severe_long_upregulated"  =
+    # enrich.sev.long - LFC < (-0.5) - HIGHER IN OA
+    enrich.sev.long %>%
+    filter(dplyr::select(., contains("log2FoldChange"))<(-0.5)) %>% 
+    dplyr::select(spid) %>%  na.omit() %>% unlist() %>% as.vector()
+
+  ) 
+
+# Write tab-delimited file with each column containing Uniprot IDs for each set of DEGs 
+write_delim(x = ldply(DEGs.updown.4David, rbind) %>% t() %>% as.data.frame(), delim = "\t", col_names = F, na="", 
+            file = "../results/deseq2/DEGs-updown-4David.txt")
+```
+
+- Navigate to DAVID on a browser - https://david.ncifcrf.gov/tools.jsp
+- On the left you'll see "Upload Gene List"
+- For Step 1, use the "B:Choose from a file" and upload the DEGs-updown-4David.txt file that was created in the last code chunk.  
+- For the Step 2 dropdown list, select "UNIPROT_ACCESSION"  
+- For Step 3, select "Gene List"  
+- Select "Submit List". 
+- You then need to upload a background list of genes. This is important. If you don't, the analysis will assume that you're comparing the DEG lists to the human genome (You'll see "Current Background: Homo sapiens"). Instead, we need to upload the list of all genes that we analyzed. To do this, use the below code chunk to copy Uniprot IDs for all genes assessed and paste into the Upload space on DAVID.  
+
+```{r}
+# Copy the BACKGROUND - all genes submitted to DESeq2 analysis 
+enrich.background %>% write_clip(allow_non_interactive = TRUE)
+```
+
+- Paste into the white box titled "A:Paste a list" in the "Upload" tab of DAVID. 
+- In Step2 select "UNIPROT_ACCESSION"  
+- For Step 3 select Background 
+- Submit List 
+- Select the "Functional Annotation Tool" then the "Functional Annotation Chart" on the next page. A table will pop up.  On top-right of table right click "Download File", then "Save Link As..." and save to file.  I used the filename "../results/deseq2/GO_filenames_updown.txt". 
+
+#### Read in enriched biological functions that were up/down-regulated in treatments
+
+```{r, warning=F, message=F}
+filenames_updown <- read_delim(file="../results/deseq2/GO_filenames_updown.txt", delim = "\t", col_names = c("filename", "gene_set"))
+file_list_updown <- vector(mode = "list", length = nrow(filenames_updown))
+names(file_list_updown) <- c(filenames_updown$gene_set)
+
+for (i in 1:nrow(filenames_updown)) {
+    file_list_updown[[i]] <- data.frame(read_delim(file=paste("../results/deseq2/", filenames_updown[i,"filename"], sep=""), delim = "\t"))}
+
+david_updown <- bind_rows(file_list_updown, .id = "gene_set") %>% clean_names() %>%  # Bind dataframe for each gene_set together
+    #filter(category=="GOTERM_BP_DIRECT") %>%
+    filter(p_value<0.05) %>%
+    dplyr::rename(percent=x) %>%
+    separate(term, into = c("term", "process"), sep = "~") %>%
+    separate(gene_set, sep = "_", into = c("OA", "duration", "response"), remove = F) %>%
+    mutate(treatment= gsub("_upregulated|_downregulated", "", gene_set) %>% factor(., ordered = TRUE, levels=c("moderate_short","moderate_long", "severe_short", "severe_long")),
+           OA=as.factor(OA), duration=as.factor(duration), response=as.factor(response)) %>% 
+  tidyr::complete(OA, duration, response, category) # add rows for gene_sets that are missing from dataframe
+
+save(david_updown, file="../results/deseq2/david_updown")
+```
+
+### Plot enriched terms in UPREGULATED genes
+
+```{r}
+# Bubble plot, Upregulated processes
+#pdf(file="../results/GO-enrichment/Final-DAVID/Upregulated-GO-bubble.pdf", height = 9, width = 7.5)
+david_updown %>% 
+#  filter(count>=3) %>% 
+  filter(p_value<0.05) %>% filter(count>=3) %>%
+  filter(category=="GOTERM_BP_DIRECT") %>% 
+#  filter(category=="UP_KW_BIOLOGICAL_PROCESS") %>%
+
+  group_by(treatment, response, genes, count) %>%
+  dplyr::summarise(p_value=min(p_value)) %>% distinct() %>% ungroup() %>% #for rows with duplicate grouping variabes, select one with lowest p-value
+  left_join(david_updown %>% 
+              dplyr::select(treatment, response, category, term, process, count, percent, p_value, fold_enrichment, fdr, genes), 
+            by = c("treatment", "response", "genes", "p_value", "count")) %>%  #re-add data
+#  ungroup() %>% arrange(stress, response, p_value) %>% group_by(stress, response) %>% dplyr::slice(1:15) %>%
+  filter(response=="upregulated") %>% 
+
+  ungroup() %>% arrange(treatment, p_value) %>%
+  mutate(process = factor(process, rev(unique(process)), ordered = TRUE)) %>%
+
+ggplot(aes(y = process, x=treatment, col=treatment)) + 
+  geom_point(alpha=0.65, aes(size=-log10(p_value))) + #size=count,  alpha=p_value, 
+ facet_wrap(~category,scales="free", nrow = 2) +
+  scale_color_manual(name="Treatment",
+                     values=c("moderate_short"=lighten("darkgreen", 0.25),
+                              "moderate_long"=lighten("yellow3", 0.25),
+                              "severe_short"=lighten("sienna2"),
+                              "severe_long"=lighten("firebrick4")),
+                     labels=c("moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure"),
+                     guide = guide_legend(override.aes = list(size=4))) +
+  scale_size("-Log10 P-value", range = c(2,8), #breaks = c(2, 5, 10),
+             guide = guide_legend(override.aes = list(col="gray50"))) +
+  scale_x_discrete(drop=T) + #Do drop empty factors for temperature contrasts
+  theme_cleveland() + 
+  theme(
+        legend.position = "right", 
+        axis.text.x=element_blank(),
+        axis.title.x=element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y=element_text(size=7.25), 
+        plot.title = element_text(size=8),
+        legend.text=element_text(size=6), 
+        legend.title = element_text(size=6),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  ggtitle("Enriched Biological Processes\nin UPREGULATED genes")
+
+```
+
+Enriched terms in DOWNREGULATED genes
+
+```{r}
+# Bubble plot, Upregulated processes
+#pdf(file="../results/GO-enrichment/Final-DAVID/Upregulated-GO-bubble.pdf", height = 9, width = 7.5)
+david_updown %>% 
+#  filter(count>=3) %>% 
+  filter(p_value<0.05) %>% filter(count>=3) %>%
+  filter(category=="GOTERM_BP_DIRECT") %>% 
+  #filter(category=="UP_KW_BIOLOGICAL_PROCESS") %>%
+
+  group_by(treatment, response, genes, count) %>%
+  dplyr::summarise(p_value=min(p_value)) %>% distinct() %>% ungroup() %>% #for rows with duplicate grouping variabes, select one with lowest p-value
+  left_join(david_updown %>% 
+              dplyr::select(treatment, response, category, term, process, count, percent, p_value, fold_enrichment, fdr, genes), 
+            by = c("treatment", "response", "genes", "p_value", "count")) %>%  #re-add data
+#  ungroup() %>% arrange(stress, response, p_value) %>% group_by(stress, response) %>% dplyr::slice(1:15) %>%
+  filter(response=="downregulated") %>% 
+
+  ungroup() %>% arrange(treatment, p_value) %>%
+  mutate(process = factor(process, rev(unique(process)), ordered = TRUE)) %>%
+
+ggplot(aes(y = process, x=treatment, col=treatment)) + 
+  geom_point(alpha=0.65, aes(size=-log10(p_value))) + #size=count,  alpha=p_value, 
+ facet_wrap(~category,scales="free", nrow = 2) +
+  scale_color_manual(name="Treatment",
+                     values=c("moderate_short"=lighten("darkgreen", 0.25),
+                              "moderate_long"=lighten("yellow3", 0.25),
+                              "severe_short"=lighten("sienna2"),
+                              "severe_long"=lighten("firebrick4")),
+                     labels=c("moderate_short"="pH 7.8, Short Exposure",
+                              "moderate_long"="pH 7.8, Long Exposure",
+                              "severe_short"="pH 7.5, Short Exposure",
+                              "severe_long"="pH 7.5, Long Exposure"),
+                     guide = guide_legend(override.aes = list(size=4))) +
+  scale_size("-Log10 P-value", range = c(2,8), #breaks = c(2, 5, 10),
+             guide = guide_legend(override.aes = list(col="gray50"))) +
+  scale_x_discrete(drop=T) + #Do drop empty factors for temperature contrasts
+  theme_cleveland() + 
+  theme(
+        legend.position = "right", 
+        axis.text.x=element_blank(),
+        axis.title.x=element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y=element_text(size=7.25), 
+        plot.title = element_text(size=8),
+        legend.text=element_text(size=6), 
+        legend.title = element_text(size=6),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  ggtitle("Enriched Biological Processes\nin DOWNREGULATED genes")
+
+```
+

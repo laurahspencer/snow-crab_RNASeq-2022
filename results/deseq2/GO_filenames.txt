@@ -1,0 +1,4 @@
+DAVID_moderate_short.txt	moderate_short
+DAVID_moderate_long.txt	moderate_long
+DAVID_severe_short.txt	severe_short
+DAVID_severe_long.txt	severe_long
