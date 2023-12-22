@@ -7,7 +7,7 @@ output: html_document
 
 In this notebook I import gene-level counts from snow crab RNA-Seq data. Trimmed RNASeq reads were aligned to the tanner crab genome using the STAR aligner, and counts (i.e. the number of reads aligning to each gene) were determined during alignment by STAR using the tanner annotation file. NOTE: before the alignment I converted the .gff annotation file (final_annotation.gff) to a .gtf file (final_annotation_LHS.gtf) for STAR.  
 
-## Load R packages needed for this notebook 
+### Load R packages needed for this notebook 
 
 ```{r message=FALSE, warning=FALSE, results=FALSE}
 list.of.packages <- c("tidyverse", "reshape2", "here", "plotly", "purrr", "janitor", "readxl", "clipr") #add new libraries here 
@@ -22,7 +22,7 @@ lapply(list.of.packages, FUN = function(X) {
 ```
 ## Read in gene count data 
 
-### 1. generate tab-separated file that lists data file names (one file for each library) and sample number
+### Generate tab-separated file that lists data file names (one file for each library) and sample number
 
 NOTE: this code chunk uses the bash language, not R
 
@@ -36,13 +36,13 @@ printf "%s\t%s\n" "$filename" "$sample" >> ../results/star/countsfilenames.txt
 done
 ```
 
-Preview the contents of the countsfilenames.txt file 
+### Preview the contents of the countsfilenames.txt file 
 
 ```{bash}
 head -n 5 ../results/star/countsfilenames.txt
 ```
 
-### 2. generate object with filenames and sample annotation information, then join 
+### Generate object with filenames and sample annotation information, then join 
 
 ```{r}
 # Create object from the countsfilenames.txt file 
@@ -88,7 +88,7 @@ for (i in 1:nrow(filenames)) {
 ### Preview counts for one sample to see what gene count data looks like 
 
 ```{r}
-file_list[[1]]
+file_list[[1]] %>% head(n=20)
 ```
 
 ### Merge data from all samples into one dataframe 
@@ -116,7 +116,7 @@ print(paste("Total counts, all samples:", prettyNum(sum(colSums(counts)), big.ma
               theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())) 
 ```
 
-## Filter dataset before analyses 
+## Filter dataset 
 
 ### Remove entire sample(s) from dataset if needed (OPTIONAL - comment out of not needed)
 
@@ -139,9 +139,9 @@ nrow(sample.info) == ncol(counts) #should = TRUE if sample.info and gene count m
 counts.t <- as.data.frame(t(counts))  
 ```
 
-### Remove lowly-expressed genes from dataset (optional, but suggested) 
+### Remove low-frequency genes from dataset (optional, but suggested) 
 
-Here we remove genes (rows) that are expressed at very low levels. These are not likely to be biologically relevant and by reducing the number of genes to be assessed for differential expression we reduce the impact of the multiple-comparison correction. The definition of "low-frequency genes" can be adjusted - there's no hard and fast rule - but this is what I have been using: "Genes with mean count <10 across all samples or those with counts <30 across at minimum 10% of the samples were discarded." 
+Here we remove genes (rows) that are expressed at very low levels. These are not likely to be biologically relevant and by reducing the number of genes to be assessed for differential expression we reduce the impact of the multiple-comparison correction. The definition of "low-frequency genes" can be adjusted - there's no hard and fast rule - but this is what I have been using: "Genes with mean count <10 across all samples or those with counts <30 across at minimum 10% of the samples were discarded." You'll see that while many genes were discarded (~36,000 were dropped, out of ~47,500), the vast majority of fragments were retained (99.955%)! This is because those 36k genes only had a few reads aligning to them. 
 
 ```{r}
 keep1 <- colMeans(counts.t, na.rm=TRUE) >= 10 #identify genes with mean count >= 10 across all samples (excluding NAs = 10)
@@ -149,7 +149,7 @@ keep2 <- rowSums( counts >= 10 ) >= 0.1*43 #identify genes with counts>=10 acros
 keep <- unique(c(names(which(keep1 == T)), names(which(keep2 == T)))) # list of genes meeting one of the two above criteria
 counts.ts <- counts.t[,keep]
 
-# Print summary of gene filtering. Note while many genes were discarded, the vast majority of fragments were retained! 
+# Print summary of gene filtering. 
 print(paste("# genes before filtering:", ncol(counts.t)))
 print(paste("# genes remaining after pre-filtering:", ncol(counts.ts)))
 print(paste("# of genes dropped:", ncol(counts.t) - ncol(counts.ts), sep=" "))
@@ -188,7 +188,8 @@ read.delim(file = "../references/final_annotation.gff", sep = "", header = F) %>
               col.names = F, row.names = F, quote = F)
 ```
 
-### Check out resulting .bed file. This has 4 columns: 1. Chromosome/contig ID (on tanner genome), 2. Gene start locus 3. Gene end locus, 4. Gene ID
+### Check out resulting .bed file. 
+This has 4 columns: 1. Chromosome/contig ID (on tanner genome), 2. Gene start locus 3. Gene end locus, 4. Gene ID
 
 ```{bash}
 head ../references/tanner_genes.bed
@@ -196,30 +197,30 @@ head ../references/tanner_genes.bed
 
 ### Run `blast` on Sedna/Mox to annotate genes. 
 
-Used the script [blast-tanner.sh](../scripts/blast-tanner.sh), which needs the following inputs: 
-  1. The most current Uniprot/Swissprot database, which can be downloaded from https://www.uniprot.org/help/downloads. Select the "Reviewed (Swiss-Prot)" in fasta format.  
-  2. The genome fasta file that was used for aligning reads. E.g. the tanner fasta was tanner.asm.hic.p_ctg.fa.  Before blasting, the script uses `bedtools getfasta` to grab the sequences for each gene from the genome. It's critical that the annotation file (.gff) that was used in the previous step to generate the .bed file is associated with the same genome file!  
+Used the script [blast-tanner.sh](../scripts/blast-tanner.sh), which needs the following inputs:   
+  1. The most current Uniprot/Swissprot database, which can be downloaded from https://www.uniprot.org/help/downloads. Select the "Reviewed (Swiss-Prot)" in fasta format.   
+  2. The genome fasta file that was used for aligning reads. E.g. the tanner fasta was tanner.asm.hic.p_ctg.fa.  Before blasting, the script uses `bedtools getfasta` to grab the sequences for each gene from the genome. It's critical that the annotation file (.gff) that was used in the previous step to generate the .bed file is associated with the same genome file!   
   3. The programs `blast` and `bedtools` need to be installed and loaded (the above script shows how they can be loaded on Mox)  
   
 Once the blast results have finished, proceed to next step! 
 
 ### Import Tanner genome annotation blast results (Uniprot/Swissprot annotated genes)
 
-File is [tanner_genes_blastx.tab](../references/tanner_genes_blastx.tab)
+NOTE: To run the below code you'll need the file tanner_genes_blastx.tab. It's very large, so grab it from [Google Drive](https://drive.google.com/file/d/1WJVAXghnyp7sZngyDdt5oDt3NokEjlas/view?usp=drive_link) and save to the snowcrab/references/ directory. 
 
-blastx output format 6 is tab file with the following columns: 
-1. qaccver = Query accesion.version
-2. saccver = Subject accession.version
-3. pident = Percentage of identical matches
-4. length = Alignment length
-5. mismatch = Number of mismatches
-6. gapopen = Number of gap openings
-7. qstart = Start of alignment in query
-8. qend = End of alignment in query
-9. sstart =  Start of alignment in subject
-10. send = End of alignment in subject
-11. evalue =  Expect value
-12. bitscore = Bit score
+blastx output format 6 is tab file with the following columns:  
+1. qaccver = Query accesion.version  
+2. saccver = Subject accession.version  
+3. pident = Percentage of identical matches  
+4. length = Alignment length  
+5. mismatch = Number of mismatches  
+6. gapopen = Number of gap openings  
+7. qstart = Start of alignment in query  
+8. qend = End of alignment in query  
+9. sstart =  Start of alignment in subject  
+10. send = End of alignment in subject  
+11. evalue =  Expect value  
+12. bitscore = Bit score  
 
 ```{r}
 tanner.blast <- 
@@ -249,12 +250,12 @@ load(file = "../references/tanner.blast")
 
 ### Annotate with Gene Ontology (GO) terms and other info
 
-#### NOTE:  I needed GO IDs and gene functions, which weren't included in the blast file.  So I copied the column containing all Uniprot IDs from the blast object, then pasted those into the tool Uniprot batch retrieval tool (https://www.uniprot.org/uploadlists/), and selected the columns: Entry, Entry name, Protein names, Gene names, Organism, Gene ontology (biological process), Gene ontology (cellular componenet), Gene ontology (molecular processes), Gene ontology (GO), Gene ontology Ids. I then downloaded all entries to a tab file, saved as: /references/tanner_genes_GO.tsv. Now I'll read that into R and join with the tanner.blast dataframe to link GO IDs with genes for exploration and enrichment analyses. 
+NOTE:  I needed GO IDs and gene functions, which weren't included in the blast file.  So I copied the column containing all Uniprot IDs from the blast object, then pasted those into the tool Uniprot batch retrieval tool (https://www.uniprot.org/uploadlists/), and selected the columns: Entry, Entry name, Protein names, Gene names, Organism, Gene ontology (biological process), Gene ontology (cellular componenet), Gene ontology (molecular processes), Gene ontology (GO), Gene ontology Ids. I then downloaded all entries to a tab file, saved as: /references/tanner_genes_GO.tsv. Now I'll read that into R and join with the tanner.blast dataframe to link GO IDs with genes for exploration and enrichment analyses. 
 
 ```{r}
 # Use this code to get list of Uniprot SPID (gene identifiers) to input into the Uniprot Batch Retrieval tool, to obtain GO terms for each gene
 tanner.blast %>% ungroup() %>% dplyr::select(spid) %>% distinct() %>%
-  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
+  na.omit() %>% unlist() %>% as.vector() %>% write_clip(allow_non_interactive = TRUE)
 
 # After downloading the tanner_genes_GO.tsv file, add GO terms to Uniprot annotation object
 tanner.blast.GO <- left_join(tanner.blast, read_delim(file = "../references/tanner_genes_GO.tsv", 
@@ -283,7 +284,7 @@ save(counts.annot.tanner, file = "../results/counts.annot.tanner")
 write.csv(counts.annot.tanner, file = "../results/counts.annot.tanner.csv", row.names = F, quote = F) #save annotated gene information to .csv file
 ```
 
-#### How many of our analyzed genes are annotated? Answer- 5,808
+#### How many of our analyzed genes are annotated? Answer: 5,808 (out of 11,491 genes that we will analyze)
 
 ```{r}
 right_join(
