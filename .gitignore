@@ -6,5 +6,4 @@
 *fasta.gz
 *.fasta
 *fasta.tar
-./references/uniprot_sprot_20231025.fasta
-./references/tanner_genes_blastx.tab
+./references/snowcrab_ASM1658430v1.gtf
