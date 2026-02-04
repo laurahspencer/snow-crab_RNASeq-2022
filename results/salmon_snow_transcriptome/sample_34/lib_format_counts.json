@@ -1,0 +1,22 @@
+{
+    "read_files": "[ /scratch/lspencer/snowcrab-OA-2022/trimmed/sample_34.trimmed.R1.fastq.gz, /scratch/lspencer/snowcrab-OA-2022/trimmed/sample_34.trimmed.R2.fastq.gz]",
+    "expected_format": "IU",
+    "compatible_fragment_ratio": 1.0,
+    "num_compatible_fragments": 65188179,
+    "num_assigned_fragments": 65188179,
+    "num_frags_with_concordant_consistent_mappings": 73116090,
+    "num_frags_with_inconsistent_or_orphan_mappings": 7728666,
+    "strand_mapping_bias": 0.45063114014986307,
+    "MSF": 0,
+    "OSF": 0,
+    "ISF": 32948387,
+    "MSR": 0,
+    "OSR": 0,
+    "ISR": 40167703,
+    "SF": 3723031,
+    "SR": 4005635,
+    "MU": 0,
+    "OU": 0,
+    "IU": 0,
+    "U": 0
+}

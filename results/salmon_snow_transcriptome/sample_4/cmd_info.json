@@ -1,0 +1,13 @@
+{
+    "salmon_version": "1.10.0",
+    "index": "/home/lspencer/snowcrab-OA-2022/trinity/salmon_index_GG",
+    "libType": "A",
+    "mates1": "/scratch/lspencer/snowcrab-OA-2022/trimmed/sample_4.trimmed.R1.fastq.gz",
+    "mates2": "/scratch/lspencer/snowcrab-OA-2022/trimmed/sample_4.trimmed.R2.fastq.gz",
+    "threads": "8",
+    "validateMappings": [],
+    "gcBias": [],
+    "seqBias": [],
+    "output": "/home/lspencer/snowcrab-OA-2022/salmon/sample_4",
+    "auxDir": "aux_info"
+}

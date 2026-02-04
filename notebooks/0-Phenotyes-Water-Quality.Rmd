@@ -1,0 +1,154 @@
+---
+title: "0-Phenotypes-Water-Quality"
+author: "Laura Spencer"
+date: "2025-10-02"
+output: html_document
+---
+
+```{r}
+require(readxl)
+require(tidyverse)
+require(janitor)
+library(seacarb)
+```
+
+I'm attaching the data below; look at the Water Chem and pH and Temp sheets for the data you need.  The 0 and 8 h crabs were sacrificed on 4/22/21 (so use the data on 4/23) and the rest were sacrificed on 7/20/21.  pH is on the Total scale.
+
+```{r}
+growth <- read_xlsx("../data/Juv SC OA data.xlsx", sheet = "Growth Data") %>% clean_names()
+chemistry1 <- read_xlsx("../data/Juv SC OA data.xlsx", sheet = "Water Chemistry") %>% clean_names() 
+chemistry2 <- read_xlsx("../data/Juv SC OA data.xlsx", sheet = "pH and Temperature", 
+                        col_types = c("date","text","numeric", "numeric", "numeric")) %>% clean_names() 
+```
+
+Size data for the animals in the cells (taken from the same population) are in the "growth data" sheet.  Stage 1 was the size at the beginning of the experiment.  Most crabs had molted to stage 2 by the 12 week point.  The best bet is to use the average of Stage 1s for the 0/8h and the average of stage 2s for the 84 days.
+
+```{r}
+# Look at molt stage across time 
+growth %>% filter(molt_date>"2021-07-19") %>% group_by(treatment, stage) %>% tally()
+
+library(lubridate)
+growth_clean <- growth %>%
+  filter(!is.na(molt_date)) %>%
+  mutate(
+    treatment = factor(treatment, 
+                       levels = c("Ambient", "pH 7.8", "pH 7.5")),  # optional
+    stage = factor(stage),
+    molt_week = floor_date(molt_date, "week"), # group by week
+    molt_mongth = floor_date(molt_date, "month") # group by month
+  )
+
+ggplot(growth_clean, aes(x = molt_week, fill = stage)) +
+  geom_bar(position = "stack") +
+  facet_wrap(~ treatment, ncol = 1, scales = "free_y") +
+  labs(
+    x = "Month",
+    y = "Number of Molts",
+    fill = "Stage",
+    title = "Molting stage over time by treatment"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+# Plot stage over time (not binned)
+ggplot(growth_clean, aes(x = molt_date, fill = stage)) +
+  geom_bar(position = "stack") +
+  facet_wrap(~ treatment, ncol = 1) +
+  labs(
+    x = "Molt Date",
+    y = "Count",
+    fill = "Stage",
+    title = "Molting stage by date and treatment"
+  ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+### What is crab sizes entering experiment
+
+```{r}
+growth %>% 
+    mutate(treatment=as.factor(treatment), stage=as.factor(as.character(stage))) %>% 
+    filter(stage %in% c("1")) %>% 
+    filter(molt_date > "2021-04-01" & molt_date < "2021-05-01") %>%     # I also opted to restrict the date
+#    group_by(treatment, stage) %>% 
+    summarise(mass_mean=signif(mean(mass, na.rm=T),2), mass_sd=signif(sd(mass, na.rm=T),2),
+              cw_mean=signif(mean(cw, na.rm=T),2), cw_sd=signif(sd(cw, na.rm=T),2))
+```
+
+
+Run seacarb to calculate chemistry 
+
+```{r}
+(chemistry3 <- chemistry2 %>% left_join(chemistry1) %>% 
+    mutate(pressure=0, alk_mol_per_kg=alkalinity*1e-6) %>% # convert alkalinity from umol/kg to mol/kg 
+    filter(!is.na(alkalinity)))
+
+chemistry3 %>% dplyr::select(treatment, insert) %>% distinct() %>% group_by(treatment) %>% tally()
+
+# run the carbonate system calculation
+chemistry4 <- carb(
+  flag = 8,      # flag = 8 pH and ALK given
+  var1 = chemistry3$p_h,  # pH in total scale 
+  var2 = chemistry3$alk_mol_per_kg,   # alkalinity in mol/kg 
+  S = chemistry3$salinity,
+  T = chemistry3$temperature, pHscale = "T") 
+
+chemistry5 <- bind_cols(
+  chemistry3,
+  chemistry4 %>%
+    select(pCO2, HCO3, CO3, DIC, OmegaAragonite, OmegaCalcite) %>%
+    mutate(
+      HCO3 = HCO3/1000,   # back to mmol/kg
+      CO3  = CO3/1000,
+      DIC  = DIC/1000))
+
+chemistry4 %>% select(pH:pCO2insitu) %>% head() %>% write_clip()
+chemistry5 %>% 
+  select(treatment, p_h, pCO2, DIC, OmegaAragonite, OmegaCalcite) %>% 
+  distinct() %>% 
+  arrange(treatment, p_h) %>% 
+  head(10) %>% write_clip()
+```
+
+### Chemistry stats for paper
+
+```{r}
+# Chemistry Day 1
+chemistry5 %>% filter(date < "2021-04-24") %>% 
+    group_by(treatment) %>% 
+    summarise(ph_mean=mean(p_h, na.rm=T), ph_sd=sd(p_h, na.rm=T),
+              temperature_mean=mean(temperature, na.rm=T), temperature_sd=sd(temperature, na.rm=T),
+              salinity_mean=mean(salinity, na.rm=T), salinity_sd=sd(salinity, na.rm=T),
+              alkalinity_mean_mmol=mean(alkalinity/1000, na.rm=T), alkalinity_sd_mmol=sd(alkalinity/1000, na.rm=T),
+              pCO2_mean=mean(pCO2, na.rm=T), pCO2_sd=sd(pCO2, na.rm=T), 
+              HCO3_mean=mean(HCO3*1e6, na.rm=T), HCO3_sd=sd(HCO3*1e6, na.rm=T), #in mmol/kg
+              CO3_mean=mean(CO3*1e6, na.rm=T), CO3_sd=sd(CO3*1e6, na.rm=T), #in mmol/kg
+              DIC_mean=mean(DIC*1e6, na.rm=T), DIC_sd=sd(DIC*1e6, na.rm=T), #in mmol/kg
+              Aragonite_mean=mean(OmegaAragonite, na.rm=T), Aragonite_sd=sd(OmegaAragonite, na.rm=T),
+              OmegaCalcite_mean=mean(OmegaCalcite, na.rm=T), OmegaCalcite_sd=sd(OmegaCalcite, na.rm=T)) %>% 
+      mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
+    arrange(desc(ph_mean))
+
+# Chemistry through Day 88
+chemistry5 %>% filter(date < "2021-07-25") %>% 
+    filter(treatment != "Ambient") %>% 
+    group_by(treatment) %>% 
+    summarise(ph_mean=mean(p_h, na.rm=T), ph_sd=sd(p_h, na.rm=T),
+              temperature_mean=mean(temperature, na.rm=T), temperature_sd=sd(temperature, na.rm=T),
+              salinity_mean=mean(salinity, na.rm=T), salinity_sd=sd(salinity, na.rm=T),
+              alkalinity_mean_mmol=mean(alkalinity/1000, na.rm=T), alkalinity_sd_mmol=sd(alkalinity/1000, na.rm=T),
+              pCO2_mean=mean(pCO2, na.rm=T), pCO2_sd=sd(pCO2, na.rm=T), 
+              HCO3_mean=mean(HCO3*1e6, na.rm=T), HCO3_sd=sd(HCO3*1e6, na.rm=T), #in mmol/kg
+              CO3_mean=mean(CO3*1e6, na.rm=T), CO3_sd=sd(CO3*1e6, na.rm=T), #in mmol/kg
+              DIC_mean=mean(DIC*1e6, na.rm=T), DIC_sd=sd(DIC*1e6, na.rm=T), #in mmol/kg
+              Aragonite_mean=mean(OmegaAragonite, na.rm=T), Aragonite_sd=sd(OmegaAragonite, na.rm=T),
+              OmegaCalcite_mean=mean(OmegaCalcite, na.rm=T), OmegaCalcite_sd=sd(OmegaCalcite, na.rm=T)) %>% 
+      mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
+    arrange(desc(ph_mean))
+```
+
+
