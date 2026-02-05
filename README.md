@@ -19,8 +19,8 @@ This repository contains the RNA-seq analysis workflow for a 2022 ocean acidific
 ## Project overview
 
 - *Species*: Snow crab (_Chionoecetes opilio_)  
-- *Experiment:* Controlled ocean acidification exposure for ~400 days at pH 7.5 (severe OA), pH 7.8 (moderate OA), and ambient/control (pH 8.0)  
-- *Tissue:* Homogenized whole=bodies  
+- *Experiment:* Controlled ocean acidification exposure for ~400 days at pH 7.5 (severe OA), pH 7.8 (moderate OA), and ambient/control (pH 8.0), conducted at the NOAA Kodiak lab  
+- *Tissue:* Homogenized whole-bodies  
 - *Approach:* Bulk RNA-seq with differential expression analysis, using the \[snow crab draft genome, GCA\_016584305.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA\_016584305.1/) for STAR alignment and gene-level quantificaton  
 - *Primary contrasts:* OA treatments vs. ambient at 8 hours of exposure, and OA treatments at 88 days (no control at 88 days).  
 
