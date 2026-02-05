@@ -8,5 +8,4 @@
 *fasta.tar
 ./references/snowcrab_ASM1658430v1.gtf
 ./results/txi.gen
-./manuscript/*.docx
-./manuscript/snow_coverletter.pdf
+./manuscript/not_for_github/
