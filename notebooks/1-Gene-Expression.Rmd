@@ -462,6 +462,13 @@ nrow(counts(dds.treatment)) #number genes before filtering
 sum(counts(dds.treatment)) #number of fragments before filtering
 ```
 
+```{r}
+data.frame(sample=names(counts)) %>% left_join(sample.info%>%mutate(sample=paste0("S",sample))) %>% 
+    mutate(s2=gsub("severe_","pH 7.5, ", treatment)) %>% mutate(s2=gsub("long","day 88", s2)) %>% 
+    mutate(s2=gsub("moderate_","pH 7.8, ", s2)) %>% mutate(s2=gsub("short","hour 8", s2)) %>% 
+    mutate(s2=gsub("ambient","pH 8.0, hour 0", s2)) %>% dplyr::select(s2) %>% write_clip()
+```
+
 ### Drop outlier sample and low-frequency genes 
 
 ```{r}
@@ -2131,14 +2138,23 @@ all_degs <- c(rownames(diffex_amb_mod_short_filt),
               rownames(diffex_amb_sev_long_filt),
               rownames(diffex_OA_long_filt)) %>% unique()
 ```
-
-
-
 ```{r}
 # Add background list of Uniprot SPID to DAVID list 
 david.lists[["background"]] <- as.data.frame(res_OA_long) %>% rownames_to_column("gene_id") %>% 
     left_join(snow.annot%>%dplyr::select(gene_id:protein,spid,evalue)%>%group_by(gene_id)%>%slice_min(evalue),
               by="gene_id") %>% distinct() 
+```
+
+```{r}
+as.data.frame(diffex_amb_mod_long_filt) %>% rownames_to_column("gene_id") %>% left_join(snow.annot) %>% 
+    dplyr::select(-cds,-protein_id,-GO) %>% distinct() %>% 
+    filter(grepl("V-type proton ATPase|Sodium/potassium-transporting ATPase",protein)) %>% 
+    arrange(padj)
+
+as.data.frame(diffex_amb_sev_long_filt) %>% rownames_to_column("gene_id") %>% left_join(snow.annot) %>% 
+    dplyr::select(-cds,-protein_id,-GO) %>% distinct() %>% 
+    filter(grepl("V-type proton ATPase|Sodium/potassium-transporting ATPase",protein)) %>% 
+    arrange(padj)
 ```
 
 

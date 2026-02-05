@@ -67,6 +67,11 @@ ggplot(growth_clean, aes(x = molt_date, fill = stage)) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
+50-50 null deviation from 
+bin heatwave non heatwave, year random effect, 
+gen linear mixed, binomial link 
+
 ### What is crab sizes entering experiment
 
 ```{r}
