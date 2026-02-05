@@ -18,22 +18,22 @@ This repository contains the RNA-seq analysis workflow for a 2022 ocean acidific
 
 ## Project overview
 
-*Species*: Snow crab (_Chionoecetes opilio_)
-*Experiment:* Controlled ocean acidification exposure for ~400 days at pH 7.5 (severe OA), pH 7.8 (moderate OA), and ambient/control (pH 8.0)
-*Tissue:* Homogenized whole=bodies
-*Approach:* Bulk RNA-seq with differential expression analysis, using the \[snow crab draft genome, GCA\_016584305.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA\_016584305.1/) for STAR alignment and gene-level quantificaton
-*Primary contrasts:* OA treatments vs. ambient at 8 hours of exposure, and OA treatments at 88 days (no control at 88 days).
+- *Species*: Snow crab (_Chionoecetes opilio_)  
+- *Experiment:* Controlled ocean acidification exposure for ~400 days at pH 7.5 (severe OA), pH 7.8 (moderate OA), and ambient/control (pH 8.0)  
+- *Tissue:* Homogenized whole=bodies  
+- *Approach:* Bulk RNA-seq with differential expression analysis, using the \[snow crab draft genome, GCA\_016584305.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA\_016584305.1/) for STAR alignment and gene-level quantificaton  
+- *Primary contrasts:* OA treatments vs. ambient at 8 hours of exposure, and OA treatments at 88 days (no control at 88 days).  
 
 ---
 
 ## Repository overview
-snow-crab\_RNASeq-2022/
-├── data/ # Sample metadata, experimental design files
-├── fastqc/ #  Raw and trimmed read QC summaries (FastQC, MultiQC)
-├── manuscript/ #
-├── notebooks/ #  R analysis notebooks
-├── references/ # Annotation files and referencde publications
-├── results/ # Resulting files from alignment, differential expression, enrichment
-├── scripts/ # Slurm scripts
-├── snow\_crab\_expression\_explorer/ # Shiny app files
-└── README.md
+snow-crab_RNASeq-2022/  
+├── data/ # Sample metadata, experimental design files  
+├── fastqc/ # Raw and trimmed read QC summaries (FastQC, MultiQC)  
+├── manuscript/ # Manuscript files (some content excluded from GitHub)  
+├── notebooks/ # R analysis notebooks  
+├── references/ # Annotation files and reference publications  
+├── results/ # Outputs from alignment, differential expression, enrichment  
+├── scripts/ # SLURM and utility scripts  
+├── snow_crab_expression_explorer/ # Shiny app files  
+└── README.md  
