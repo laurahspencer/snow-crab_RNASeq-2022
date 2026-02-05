@@ -7,11 +7,11 @@ Laura H Spencer1,3, Ingrid Spies3, Jennifer L. Gardner2, Steven Roberts1, W. Chr
 2. Kodiak Laboratory, Alaska Fisheries Science Center, National Marine Fisheries Service, National Oceanic and Atmospheric Administration, 301 Research Court, Kodiak, AK 99615, USA
 3. Alaska Fisheries Science Center, National Marine Fisheries Service, National Oceanic and Atmospheric Administration, 7600 Sand Point Way NE, Seattle, WA 98115, USA
 
-This repository contains the RNA-seq analysis workflow for a 2022 ocean acidification experiment in juvenile snow crab (\*Chionoecetes opilio\*). The goal of this project was to characterize short- and long-term transcriptional responses to reduced pH in an OA-tolerant species.
+This repository contains the RNA-seq analysis workflow for a 2022 ocean acidification experiment in juvenile snow crab (_Chionoecetes opilio_). The goal of this project was to characterize short- and long-term transcriptional responses to reduced pH in an OA-tolerant species.
 
 * This is a complementary study to the [Long et al. 2026](https://doi.org/10.1016/j.jembe.2025.152153).
 * Raw data is available on NCBI SRA under [BioProject PRJNA1419231](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1419231).
-* The manuscript has been submitted to Journal of Experimental Biology and is available as a pre-print on [BioRxiv, ID: BIORXIV/2026/703865]().
+* The manuscript has been submitted to Journal of Experimental Biology and is available as a pre-print on BioRxiv, ID: BIORXIV/2026/703865 (link TBD).
 * Expression data is available to explore! Check out this interactive app, [Snow Crab Ocean Acidification Gene Expression Explorer](https://i0o16k-laura0h0spencer.shinyapps.io/snow\_crab\_expression\_explorer/), where you can search for genes by name, protein name, GO term, Uniprot SPID and visualize expression by treatment via boxplots, and PCA.
 
 ---
