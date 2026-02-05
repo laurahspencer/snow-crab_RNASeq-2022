@@ -1,0 +1,221 @@
+PC,Loading,gene_id,gene_name,protein,spid,protein_names,evalue
+PC1,0.070,GWK47_034327,Ank1,Ankyrin-1,Q9P2R3,Rabankyrin-5 (Rank-5) (Ankyrin repeat and FYVE domain-containing protein 1) (Ankyrin repeats hooked to a zinc finger motif),7.70E-12
+PC1,0.069,GWK47_037457,Slc18b1_0,MFS-type transporter SLC18B1,D4A9K4,MFS-type transporter SLC18B1 (Solute carrier family 18 member B1) (Vesicular polyamine transporter) (VPAT),4.01E-79
+PC1,0.069,GWK47_037092,,hypothetical protein,,,
+PC1,0.065,GWK47_037093,,hypothetical protein,,,
+PC1,0.064,GWK47_045598,,hypothetical protein,,,
+PC1,0.063,GWK47_053713,MFSD12_1,Major facilitator superfamily domain-containing protein 12,A0A3Q2HW92,Major facilitator superfamily domain-containing protein 12,8.85E-74
+PC1,0.062,GWK47_032544,SLC15A1,Solute carrier family 15 member 1,B0S6T2,Solute carrier family 15 member 2 (Peptide transporter 2) (PEPT2),4.00E-166
+PC1,0.061,GWK47_048345,PNLIPRP2_1,Pancreatic lipase-related protein 2,P81139,Pancreatic lipase-related protein 2 (PL-RP2) (Cytotoxic T lymphocyte lipase) (GPL) (Galactolipase) (EC 3.1.1.26) (Triacylglycerol lipase) (EC 3.1.1.3),1.10E-65
+PC1,0.059,GWK47_022355,Pnliprp1_0,Inactive pancreatic lipase-related protein 1,Q5BKQ4,Inactive pancreatic lipase-related protein 1 (PL-RP1),1.14E-42
+PC1,0.059,GWK47_022009,Leng9,Leukocyte receptor cluster member 9,Q8BTN6,Leukocyte receptor cluster member 9,4.30E-33
+PC1,0.057,GWK47_014687,Bbox1_2,Gamma-butyrobetaine dioxygenase,Q9QZU7,"Gamma-butyrobetaine dioxygenase (EC 1.14.11.1) (Gamma-butyrobetaine hydroxylase) (Gamma-BBH) (Gamma-butyrobetaine,2-oxoglutarate dioxygenase)",7.82E-66
+PC1,0.057,GWK47_039428,,hypothetical protein,,,
+PC1,0.055,GWK47_051099,CPB1,Carboxypeptidase B,P00732,Carboxypeptidase B (EC 3.4.17.2),4.61E-21
+PC1,0.053,GWK47_005561,,hypothetical protein,,,
+PC1,0.052,GWK47_005560,,hypothetical protein,,,
+PC1,0.051,GWK47_015179,,hypothetical protein,,,
+PC1,0.051,GWK47_022413,,hypothetical protein,,,
+PC1,0.050,GWK47_023919,IRF8,Interferon regulatory factor 8,,,
+PC1,0.050,GWK47_036704,PCK2,Phosphoenolpyruvate carboxykinase [GTP,Q16822,"Phosphoenolpyruvate carboxykinase [GTP], mitochondrial (PEPCK-M) (EC 4.1.1.32) (Phosphoenolpyruvate carboxykinase 2, mitochondrial) (mtPCK2)",0
+PC1,0.049,GWK47_006188,Mknk1,MAP kinase-interacting serine/threonine-protein kinase 1,Q66I46,MAP kinase-interacting serine/threonine-protein kinase 2 (EC 2.7.11.1) (MAP kinase signal-integrating kinase 2) (MAPK signal-integrating kinase 2) (Mnk2),6.35E-162
+PC1,0.047,GWK47_019251,MUCB1,Integumentary mucin B.1,,,
+PC1,0.047,GWK47_046142,Diap2_3,Death-associated inhibitor of apoptosis 2,A9JTP3,Baculoviral IAP repeat-containing protein 7 (EC 2.3.2.27) (E3 ubiquitin-protein ligase EIAP) (Embryonic/Egg IAP) (EIAP/XLX) (RING-type E3 ubiquitin transferase BIRC7),9.42E-43
+PC1,0.046,GWK47_031369,pim3_1,Serine/threonine-protein kinase pim-3,Q91822,Serine/threonine-protein kinase pim-3 (EC 2.7.11.1) (Pim-1),8.82E-103
+PC1,0.046,GWK47_024287,,hypothetical protein,,,
+PC1,0.045,GWK47_022732,CREBL2,cAMP-responsive element-binding protein-like 2,Q0VD32,cAMP-responsive element-binding protein-like 2,5.05E-27
+PC1,0.044,GWK47_002621,,hypothetical protein,,,
+PC1,0.044,GWK47_006061,LRP1_1,Prolow-density lipoprotein receptor-related protein 1,,,
+PC1,0.043,GWK47_005062,,hypothetical protein,,,
+PC1,0.043,GWK47_036705,Pepck,Phosphoenolpyruvate carboxykinase [GTP,Q16822,"Phosphoenolpyruvate carboxykinase [GTP], mitochondrial (PEPCK-M) (EC 4.1.1.32) (Phosphoenolpyruvate carboxykinase 2, mitochondrial) (mtPCK2)",0
+PC1,0.043,GWK47_009678,Ets21C,DNA-binding protein D-ETS-6,P29776,DNA-binding protein D-ETS-6,1.33E-60
+PC1,0.042,GWK47_044097,,Protein ALP1-like,Q9M2U3,Protein ALP1-like (EC 3.1.-.-),2.24E-17
+PC1,0.041,GWK47_030649,,hypothetical protein,,,
+PC1,0.041,GWK47_039310,STEAP4,Metalloreductase STEAP4,Q687X5,"Metalloreductase STEAP4 (EC 1.16.1.-) (Six-transmembrane epithelial antigen of prostate 4) (SixTransMembrane protein of prostate 2) (Tumor necrosis factor, alpha-induced protein 9)",1.33E-57
+PC1,0.040,GWK47_035761,YPEL2,Protein yippee-like 2,Q2YDI3,Protein yippee-like 2,1.25E-78
+PC1,0.040,GWK47_030652,CBR1_1,Carbonyl reductase [NADPH,P47727,"Carbonyl reductase [NADPH] 1 (EC 1.1.1.184) (15-hydroxyprostaglandin dehydrogenase [NADP(+)]) (EC 1.1.1.196, EC 1.1.1.197) (20-beta-hydroxysteroid dehydrogenase) (Alcohol dehydrogenase [NAD(P)+] CBR1) (EC 1.1.1.71) (NADPH-dependent carbonyl reductase 1) (Prostaglandin 9-ketoreductase) (PG-9-KR) (Prostaglandin-E(2) 9-reductase) (EC 1.1.1.189)",2.62E-22
+PC1,0.039,GWK47_039627,,hypothetical protein,,,
+PC1,0.039,GWK47_032198,RpL23_43,60S ribosomal protein L23,P48159,Large ribosomal subunit protein uL14 (60S ribosomal protein L23) (L17A),1.79E-16
+PC1,0.039,GWK47_012582,v,"Tryptophan 2,3-dioxygenase",B4MSH7,"Tryptophan 2,3-dioxygenase (TDO) (EC 1.13.11.11) (Protein vermilion) (Tryptamin 2,3-dioxygenase) (Tryptophan oxygenase) (TO) (TRPO) (Tryptophan pyrrolase) (Tryptophanase)",2.95E-155
+PC1,0.038,GWK47_003883,Mfsd8_1,Major facilitator superfamily domain-containing protein 8,Q8BH31,Major facilitator superfamily domain-containing protein 8,6.08E-69
+PC1,0.038,GWK47_047355,,hypothetical protein,,,
+PC1,0.038,GWK47_008564,,hypothetical protein,,,
+PC1,0.037,GWK47_015327,,hypothetical protein,,,
+PC1,0.037,GWK47_021769,Rim2,Mitochondrial carrier protein Rim2,Q9VQ37,Mitochondrial carrier protein Rim2,4.89E-78
+PC1,0.036,GWK47_013067,,hypothetical protein,,,
+PC1,0.036,GWK47_049593,Pnlip_1,Pancreatic triacylglycerol lipase,Q6P8U6,Pancreatic triacylglycerol lipase (PL) (PTL) (Pancreatic lipase) (EC 3.1.1.3),1.84E-85
+PC1,0.036,GWK47_018480,,hypothetical protein,,,
+PC1,0.036,GWK47_046958,PRSS55,Serine protease 55,Q28661,Vitamin K-dependent protein C (EC 3.4.21.69) (Anticoagulant protein C) (Autoprothrombin IIA) (Blood coagulation factor XIV) [Cleaved into: Vitamin K-dependent protein C light chain; Vitamin K-dependent protein C heavy chain; Activation peptide],3.76E-23
+PC1,0.036,GWK47_050071,,hypothetical protein,,,
+PC1,0.035,GWK47_049589,CBR1_3,Carbonyl reductase [NADPH,P47727,"Carbonyl reductase [NADPH] 1 (EC 1.1.1.184) (15-hydroxyprostaglandin dehydrogenase [NADP(+)]) (EC 1.1.1.196, EC 1.1.1.197) (20-beta-hydroxysteroid dehydrogenase) (Alcohol dehydrogenase [NAD(P)+] CBR1) (EC 1.1.1.71) (NADPH-dependent carbonyl reductase 1) (Prostaglandin 9-ketoreductase) (PG-9-KR) (Prostaglandin-E(2) 9-reductase) (EC 1.1.1.189)",1.51E-24
+PC1,0.035,GWK47_038632,SLC10A2_1,Ileal sodium/bile acid cotransporter,Q12908,"Ileal sodium/bile acid cotransporter (Apical sodium-dependent bile acid transporter) (ASBT) (Ileal Na(+)/bile acid cotransporter) (Ileal sodium-dependent bile acid transporter) (IBAT) (ISBT) (Na(+)-dependent ileal bile acid transporter) (Sodium/taurocholate cotransporting polypeptide, ileal) (Solute carrier family 10 member 2)",4.46E-54
+PC1,0.034,GWK47_049115,Eif4ebp1,Eukaryotic translation initiation factor 4E-binding protein 1,Q60876,Eukaryotic translation initiation factor 4E-binding protein 1 (4E-BP1) (eIF4E-binding protein 1) (Phosphorylated heat- and acid-stable protein regulated by insulin 1) (PHAS-I),4.64E-23
+PC1,0.034,GWK47_009625,CBR1_5,Carbonyl reductase [NADPH,Q28960,"Carbonyl reductase [NADPH] 1 (EC 1.1.1.184) (15-hydroxyprostaglandin dehydrogenase [NADP(+)]) (EC 1.1.1.196, EC 1.1.1.197) (20-beta-hydroxysteroid dehydrogenase) (Alcohol dehydrogenase [NAD(P)+] CBR1) (EC 1.1.1.71) (NADPH-dependent carbonyl reductase 1) (Prostaglandin 9-ketoreductase) (PG-9-KR) (Prostaglandin-E(2) 9-reductase) (EC 1.1.1.189)",4.66E-13
+PC1,0.034,GWK47_012393,mas,Protein masquerade,Q9VZH2,Protein masquerade,1.85E-152
+PC1,0.034,GWK47_032943,mfsd8_0,Major facilitator superfamily domain-containing protein 8,Q8BH31,Major facilitator superfamily domain-containing protein 8,9.25E-39
+PC1,0.034,GWK47_048516,SLC37A4,Glucose-6-phosphate exchanger SLC37A4,O43826,Glucose-6-phosphate exchanger SLC37A4 (Glucose-5-phosphate transporter) (Glucose-6-phosphate translocase) (Solute carrier family 37 member 4) (Transformation-related gene 19 protein) (TRG-19),3.73E-69
+PC1,-0.081,GWK47_029205,HSP90AA1,Heat shock protein HSP 90-alpha,Q76LV2,Heat shock protein HSP 90-alpha (EC 3.6.4.10),0
+PC1,-0.078,GWK47_033734,HSP71_1,Heat shock protein 1,A2Q0Z1,Heat shock cognate 71 kDa protein (EC 3.6.4.10) (Heat shock 70 kDa protein 8),0
+PC1,-0.061,GWK47_006688,CUPA3_2,Cuticle protein AM1199,Q8T635,Pupal cuticle protein 20 (MS-PCP20) (MsCP20),2.33E-23
+PC1,-0.060,GWK47_035275,,hypothetical protein,,,
+PC1,-0.060,GWK47_035115,,hypothetical protein,,,
+PC1,-0.056,GWK47_030598,,hypothetical protein,P10776,Neuroparsin-A (NPA) [Cleaved into: Neuroparsin-B (NPB)],3.73E-11
+PC1,-0.055,GWK47_042440,CUPA3_0,Cuticle protein AM1199,P81577,Cuticle protein AM1199 (CPAM1199),4.01E-21
+PC1,-0.053,GWK47_007253,UGT2B15_3,UDP-glucuronosyltransferase 2B15,A0A291PQF1,UDP-glycosyltransferase UGT5 (EC 2.4.1.-) (UDP-glucosyltransferase 5) (DcUGT5),3.95E-43
+PC1,-0.051,GWK47_049614,,hypothetical protein,,,
+PC1,-0.047,GWK47_049006,,hypothetical protein,,,
+PC1,-0.047,GWK47_031218,pik3r1-a,Phosphatidylinositol 3-kinase regulatory subunit alpha,P26450,Phosphatidylinositol 3-kinase regulatory subunit alpha (PI3-kinase regulatory subunit alpha) (PI3K regulatory subunit alpha) (PtdIns-3-kinase regulatory subunit alpha) (Phosphatidylinositol 3-kinase 85 kDa regulatory subunit alpha) (PI3-kinase subunit p85-alpha) (PtdIns-3-kinase regulatory subunit p85-alpha),1.35E-103
+PC1,-0.046,GWK47_016794,,hypothetical protein,,,
+PC1,-0.045,GWK47_031141,Mid1ip1_1,Mid1-interacting protein 1,,,
+PC1,-0.045,GWK47_040257,acsbg2,Long-chain-fatty-acid--CoA ligase ACSBG2,Q7ZYC4,Long-chain-fatty-acid--CoA ligase ACSBG2 (EC 6.2.1.3) (Acyl-CoA synthetase bubblegum family member 2) (Arachidonate--CoA ligase ACSBG2) (EC 6.2.1.15),1.09E-261
+PC1,-0.045,GWK47_020967,,hypothetical protein,,,
+PC1,-0.043,GWK47_024010,,hypothetical protein,H9J9M0,Chitin deacetylase 1 (BmCDA1) (EC 3.5.1.41),7.46E-158
+PC1,-0.043,GWK47_010827,Top3alpha,DNA topoisomerase 3-alpha,Q13472,DNA topoisomerase 3-alpha (EC 5.6.2.1) (DNA topoisomerase III alpha),1.79E-89
+PC1,-0.043,GWK47_029204,hsp90a.1,Heat shock protein HSP 90-alpha 1,P11501,Heat shock protein HSP 90-alpha,0
+PC1,-0.041,GWK47_001040,,hypothetical protein,,,
+PC1,-0.040,GWK47_030594,NPAB,Neuroparsin-A,P10776,Neuroparsin-A (NPA) [Cleaved into: Neuroparsin-B (NPB)],1.14E-12
+PC1,-0.040,GWK47_049966,Fasn,Fatty acid synthase,P12785,Fatty acid synthase (EC 2.3.1.85) (Type I FAS) [Includes: [Acyl-carrier-protein] S-acetyltransferase (EC 2.3.1.38); [Acyl-carrier-protein] S-malonyltransferase (EC 2.3.1.39); 3-oxoacyl-[acyl-carrier-protein] synthase (EC 2.3.1.41); 3-oxoacyl-[acyl-carrier-protein] reductase (EC 1.1.1.100); 3-hydroxyacyl-[acyl-carrier-protein] dehydratase (EC 4.2.1.59); Enoyl-[acyl-carrier-protein] reductase (EC 1.3.1.39); Acyl-[acyl-carrier-protein] hydrolase (EC 3.1.2.14)],0
+PC1,-0.040,GWK47_050768,SRSF2,Serine/arginine-rich splicing factor 2,Q3MHR5,"Serine/arginine-rich splicing factor 2 (Splicing component, 35 kDa) (Splicing factor SC35) (SC-35) (Splicing factor, arginine/serine-rich 2)",6.10E-35
+PC1,-0.039,GWK47_051181,TPO,Thyroid peroxidase,P09933,Thyroid peroxidase (TPO) (EC 1.11.1.8),2.51E-54
+PC1,-0.039,GWK47_008940,NT1_2,Neurotrophin 1,B7TB45,Neurotrophin 1 (Neurotrophic factor 1) (Protein spaetzle 2) (Protein spatzle 2),5.38E-22
+PC1,-0.039,GWK47_033733,,hypothetical protein,,,
+PC1,-0.038,GWK47_050070,RGN_1,Regucalcin,Q9I923,Regucalcin (RC) (Gluconolactonase) (GNL) (EC 3.1.1.17),7.20E-58
+PC1,-0.038,GWK47_016791,,hypothetical protein,P0DPW4,U-scoloptoxin(01)-Er1a (U-SLPTX(01)-Er1a),4.85E-13
+PC1,-0.037,GWK47_007252,,hypothetical protein,,,
+PC1,-0.037,GWK47_022063,hsc71,Heat shock cognate protein,P08108,Heat shock cognate 70 kDa protein (HSP70),0
+PC1,-0.036,GWK47_010380,Surf6_1,Surfeit locus protein 6,,,
+PC1,-0.036,GWK47_032395,HSP7D,Heat shock protein cognate 4,Q9U639,Heat shock 70 kDa protein cognate 4 (Hsc 70-4),0
+PC1,-0.035,GWK47_015047,4CL_0,4-coumarate--CoA ligase,P41636,4-coumarate--CoA ligase (4CL) (EC 6.2.1.12) (4-coumaroyl-CoA synthase),1.46E-79
+PC1,-0.035,GWK47_005980,Hsc70-3,Endoplasmic reticulum chaperone BiP,P29844,Endoplasmic reticulum chaperone BiP (EC 3.6.4.10) (78 kDa glucose-regulated protein homolog) (GRP-78 homolog) (Binding-immunoglobulin protein homolog) (BiP) (Heat shock 70 kDa protein cognate 3) (Heat shock protein cognate 72),0
+PC1,-0.034,GWK47_002997,,hypothetical protein,,,
+PC1,-0.034,GWK47_020563,Phgdh,D-3-phosphoglycerate dehydrogenase,A5GFY8,D-3-phosphoglycerate dehydrogenase (3-PGDH) (EC 1.1.1.95) (2-oxoglutarate reductase) (EC 1.1.1.399) (Malate dehydrogenase) (EC 1.1.1.37),7.42E-149
+PC1,-0.033,GWK47_020014,NT1_0,Neurotrophin 1,B7TB45,Neurotrophin 1 (Neurotrophic factor 1) (Protein spaetzle 2) (Protein spatzle 2),5.38E-22
+PC1,-0.033,GWK47_035175,,hypothetical protein,,,
+PC1,-0.033,GWK47_026680,,hypothetical protein,,,
+PC1,-0.032,GWK47_050003,miox,Inositol oxygenase,Q4V8T0,Inositol oxygenase (EC 1.13.99.1) (Myo-inositol oxygenase) (MI oxygenase),9.98E-64
+PC1,-0.032,GWK47_031383,Smyd4,SET and MYND domain-containing protein 4,Q8BTK5,Protein-lysine N-methyltransferase SMYD4 (EC 2.1.1.-) (SET and MYND domain-containing protein 4),9.58E-23
+PC1,-0.032,GWK47_033735,HSP71_0,Heat shock protein 1,Q9I8F9,Heat shock 70 kDa protein 1 (HSP70-1),0
+PC1,-0.032,GWK47_053415,doxa-1,Dual oxidase maturation factor 1,Q1HG43,Dual oxidase maturation factor 1 (Dual oxidase activator 1) (Numb-interacting protein),1.79E-27
+PC1,-0.031,GWK47_002331,Hsp60A,Heat shock protein 60A,O02649,Heat shock protein 60A,6.38E-298
+PC1,-0.031,GWK47_041632,DPGN_1,Serine protease inhibitor dipetalogastin,O00468,Agrin [Cleaved into: Agrin N-terminal 110 kDa subunit; Agrin C-terminal 110 kDa subunit; Agrin C-terminal 90 kDa fragment (C90); Agrin C-terminal 22 kDa fragment (C22)],2.65E-35
+PC1,-0.031,GWK47_005117,slc39a1_3,Zinc transporter ZIP1,P59889,Zinc transporter ZIP1 (DrZIP1) (Solute carrier family 39 member 1) (Zrt- and Irt-like protein 1) (ZIP-1),5.14E-28
+PC1,-0.031,GWK47_014594,fp-1_1,Foot protein 1 variant 1,,,
+PC1,-0.030,GWK47_021460,Tspan3,Tetraspanin-3,Q9QY33,Tetraspanin-3 (Tspan-3) (OSP-associated protein 1) (OAP-1) (Tetraspanin TM4-A) (Transmembrane 4 superfamily member 8),2.85E-13
+PC1,-0.030,GWK47_041667,ABHD1,Protein ABHD1,Q3T0A0,Protein ABHD1 (EC 3.1.1.-) (Alpha/beta hydrolase domain-containing protein 1) (Abhydrolase domain-containing protein 1),7.42E-69
+PC1,-0.029,GWK47_019908,,hypothetical protein,,,
+PC1,-0.029,GWK47_041654,Mfsd6_1,Major facilitator superfamily domain-containing protein 6,Q8CBH5,Major facilitator superfamily domain-containing protein 6 (Macrophage MHC class I receptor 2),9.47E-16
+PC1,-0.029,GWK47_041870,,hypothetical protein,,,
+PC1,-0.029,GWK47_023090,CYCE,G1/S-specific cyclin-E,O15995,G1/S-specific cyclin-E,1.14E-104
+PC1,-0.029,GWK47_022176,HSPA14,Heat shock protein 14,Q2YDD0,Heat shock 70 kDa protein 14,9.45E-83
+PC1,-0.029,GWK47_020491,4CL_1,4-coumarate--CoA ligase,P41636,4-coumarate--CoA ligase (4CL) (EC 6.2.1.12) (4-coumaroyl-CoA synthase),6.06E-45
+PC1,-0.029,GWK47_052632,rpf1,Ribosome production factor 1,Q9VKB4,Probable ribosome production factor 1 (Ribosome biogenesis protein RPF1),1.27E-105
+PC2,0.082,GWK47_010391,Bbox1_6,Gamma-butyrobetaine dioxygenase,Q9QZU7,"Gamma-butyrobetaine dioxygenase (EC 1.14.11.1) (Gamma-butyrobetaine hydroxylase) (Gamma-BBH) (Gamma-butyrobetaine,2-oxoglutarate dioxygenase)",5.71E-66
+PC2,0.072,GWK47_020967,,hypothetical protein,,,
+PC2,0.062,GWK47_035115,,hypothetical protein,,,
+PC2,0.062,GWK47_016794,,hypothetical protein,,,
+PC2,0.060,GWK47_022009,Leng9,Leukocyte receptor cluster member 9,Q8BTN6,Leukocyte receptor cluster member 9,4.30E-33
+PC2,0.060,GWK47_047904,,hypothetical protein,,,
+PC2,0.057,GWK47_053415,doxa-1,Dual oxidase maturation factor 1,Q1HG43,Dual oxidase maturation factor 1 (Dual oxidase activator 1) (Numb-interacting protein),1.79E-27
+PC2,0.055,GWK47_030456,EST6_2,Venom carboxylesterase-6,B2D0J5,Venom carboxylesterase-6 (EC 3.1.1.1) (allergen Api m 8),4.92E-33
+PC2,0.055,GWK47_043555,,hypothetical protein,H9J9M0,Chitin deacetylase 1 (BmCDA1) (EC 3.5.1.41),1.16E-82
+PC2,0.049,GWK47_035275,,hypothetical protein,,,
+PC2,0.049,GWK47_041224,,hypothetical protein,,,
+PC2,0.048,GWK47_039556,,hypothetical protein,,,
+PC2,0.048,GWK47_041632,DPGN_1,Serine protease inhibitor dipetalogastin,O00468,Agrin [Cleaved into: Agrin N-terminal 110 kDa subunit; Agrin C-terminal 110 kDa subunit; Agrin C-terminal 90 kDa fragment (C90); Agrin C-terminal 22 kDa fragment (C22)],2.65E-35
+PC2,0.047,GWK47_049614,,hypothetical protein,,,
+PC2,0.045,GWK47_014687,Bbox1_2,Gamma-butyrobetaine dioxygenase,Q9QZU7,"Gamma-butyrobetaine dioxygenase (EC 1.14.11.1) (Gamma-butyrobetaine hydroxylase) (Gamma-BBH) (Gamma-butyrobetaine,2-oxoglutarate dioxygenase)",7.82E-66
+PC2,0.045,GWK47_024010,,hypothetical protein,H9J9M0,Chitin deacetylase 1 (BmCDA1) (EC 3.5.1.41),7.46E-158
+PC2,0.044,GWK47_006188,Mknk1,MAP kinase-interacting serine/threonine-protein kinase 1,Q66I46,MAP kinase-interacting serine/threonine-protein kinase 2 (EC 2.7.11.1) (MAP kinase signal-integrating kinase 2) (MAPK signal-integrating kinase 2) (Mnk2),6.35E-162
+PC2,0.043,GWK47_037828,REG1B_0,Lithostathine-1-beta,P48304,Lithostathine-1-beta (Pancreatic stone protein 2) (PSP-2) (Regenerating islet-derived protein 1-beta) (REG-1-beta) (Regenerating protein I beta),3.34E-14
+PC2,0.042,GWK47_009625,CBR1_5,Carbonyl reductase [NADPH,Q28960,"Carbonyl reductase [NADPH] 1 (EC 1.1.1.184) (15-hydroxyprostaglandin dehydrogenase [NADP(+)]) (EC 1.1.1.196, EC 1.1.1.197) (20-beta-hydroxysteroid dehydrogenase) (Alcohol dehydrogenase [NAD(P)+] CBR1) (EC 1.1.1.71) (NADPH-dependent carbonyl reductase 1) (Prostaglandin 9-ketoreductase) (PG-9-KR) (Prostaglandin-E(2) 9-reductase) (EC 1.1.1.189)",4.66E-13
+PC2,0.042,GWK47_006084,,hypothetical protein,,,
+PC2,0.041,GWK47_008653,,hypothetical protein,,,
+PC2,0.041,GWK47_042440,CUPA3_0,Cuticle protein AM1199,P81577,Cuticle protein AM1199 (CPAM1199),4.01E-21
+PC2,0.041,GWK47_001115,,hypothetical protein,,,
+PC2,0.041,GWK47_010389,Bbox1_5,Gamma-butyrobetaine dioxygenase,Q9QZU7,"Gamma-butyrobetaine dioxygenase (EC 1.14.11.1) (Gamma-butyrobetaine hydroxylase) (Gamma-BBH) (Gamma-butyrobetaine,2-oxoglutarate dioxygenase)",8.70E-61
+PC2,0.040,GWK47_029207,,hypothetical protein,,,
+PC2,0.040,GWK47_005978,GstD7_4,Glutathione S-transferase D7,O76483,Glutathione S-transferase D7 (EC 2.5.1.18) (Aggst1-7) (GST class-theta) (Gst1-beta),1.64E-46
+PC2,0.039,GWK47_048516,SLC37A4,Glucose-6-phosphate exchanger SLC37A4,O43826,Glucose-6-phosphate exchanger SLC37A4 (Glucose-5-phosphate transporter) (Glucose-6-phosphate translocase) (Solute carrier family 37 member 4) (Transformation-related gene 19 protein) (TRG-19),3.73E-69
+PC2,0.039,GWK47_019387,,hypothetical protein,,,
+PC2,0.039,GWK47_017468,FCN2_0,Ficolin-2,D8VNS7,Ryncolin-1,8.34E-58
+PC2,0.038,GWK47_006688,CUPA3_2,Cuticle protein AM1199,Q8T635,Pupal cuticle protein 20 (MS-PCP20) (MsCP20),2.33E-23
+PC2,0.038,GWK47_046867,Ddit4l_1,DNA damage-inducible transcript 4-like protein,Q8VHZ5,DNA damage-inducible transcript 4-like protein (HIF-1 responsive protein RTP801-like) (Soleus muscle atrophied after hindlimb suspension protein 1),1.23E-17
+PC2,0.038,GWK47_000622,,hypothetical protein,,,
+PC2,0.037,GWK47_030652,CBR1_1,Carbonyl reductase [NADPH,P47727,"Carbonyl reductase [NADPH] 1 (EC 1.1.1.184) (15-hydroxyprostaglandin dehydrogenase [NADP(+)]) (EC 1.1.1.196, EC 1.1.1.197) (20-beta-hydroxysteroid dehydrogenase) (Alcohol dehydrogenase [NAD(P)+] CBR1) (EC 1.1.1.71) (NADPH-dependent carbonyl reductase 1) (Prostaglandin 9-ketoreductase) (PG-9-KR) (Prostaglandin-E(2) 9-reductase) (EC 1.1.1.189)",2.62E-22
+PC2,0.037,GWK47_046504,,hypothetical protein,,,
+PC2,0.036,GWK47_015327,,hypothetical protein,,,
+PC2,0.036,GWK47_041870,,hypothetical protein,,,
+PC2,0.036,GWK47_046293,Pino,Protein pinocchio,Q9VPW8,Protein pinocchio,8.94E-33
+PC2,0.035,GWK47_051181,TPO,Thyroid peroxidase,P09933,Thyroid peroxidase (TPO) (EC 1.11.1.8),2.51E-54
+PC2,0.035,GWK47_017780,obst-E_0,Protein obstructor-E,Q9VMM6,Protein obstructor-E,1.63E-50
+PC2,0.035,GWK47_046142,Diap2_3,Death-associated inhibitor of apoptosis 2,A9JTP3,Baculoviral IAP repeat-containing protein 7 (EC 2.3.2.27) (E3 ubiquitin-protein ligase EIAP) (Embryonic/Egg IAP) (EIAP/XLX) (RING-type E3 ubiquitin transferase BIRC7),9.42E-43
+PC2,0.035,GWK47_002017,,hypothetical protein,,,
+PC2,0.035,GWK47_008651,EST6_5,Venom carboxylesterase-6,P14943,Cocaine esterase (EC 3.1.1.84) (Liver carboxylesterase 2) (EC 3.1.1.1),2.59E-55
+PC2,0.034,GWK47_053713,MFSD12_1,Major facilitator superfamily domain-containing protein 12,A0A3Q2HW92,Major facilitator superfamily domain-containing protein 12,8.85E-74
+PC2,0.034,GWK47_028242,,hypothetical protein,,,
+PC2,0.034,GWK47_016256,,hypothetical protein,O75936,"Gamma-butyrobetaine dioxygenase (EC 1.14.11.1) (Gamma-butyrobetaine hydroxylase) (Gamma-BBH) (Gamma-butyrobetaine,2-oxoglutarate dioxygenase)",1.14E-12
+PC2,0.033,GWK47_028285,,hypothetical protein,Q9W2W5,ADP-ribosylarginine hydrolase CG2909 (EC 3.2.2.19),2.05E-94
+PC2,0.033,GWK47_001991,,hypothetical protein,,,
+PC2,0.033,GWK47_022806,Mhc_2,"Myosin heavy chain, muscle",P05661,"Myosin heavy chain, muscle",0
+PC2,0.033,GWK47_054979,Gld_3,"Glucose dehydrogenase [FAD, quinone",P18173,"Glucose dehydrogenase [FAD, quinone] (EC 1.1.5.9) [Cleaved into: Glucose dehydrogenase [FAD, quinone] short protein]",1.40E-104
+PC2,0.033,GWK47_040824,,hypothetical protein,,,
+PC2,0.033,GWK47_024100,,hypothetical protein,,,
+PC2,0.032,GWK47_022807,Mhc_3,"Myosin heavy chain, muscle",P05661,"Myosin heavy chain, muscle",0
+PC2,0.032,GWK47_053361,,hypothetical protein,,,
+PC2,0.032,GWK47_038632,SLC10A2_1,Ileal sodium/bile acid cotransporter,Q12908,"Ileal sodium/bile acid cotransporter (Apical sodium-dependent bile acid transporter) (ASBT) (Ileal Na(+)/bile acid cotransporter) (Ileal sodium-dependent bile acid transporter) (IBAT) (ISBT) (Na(+)-dependent ileal bile acid transporter) (Sodium/taurocholate cotransporting polypeptide, ileal) (Solute carrier family 10 member 2)",4.46E-54
+PC2,0.032,GWK47_016613,Rdh12_1,Retinol dehydrogenase 12,Q8BYK4,Retinol dehydrogenase 12 (EC 1.1.1.300),8.62E-77
+PC2,-0.086,GWK47_005561,,hypothetical protein,,,
+PC2,-0.086,GWK47_005560,,hypothetical protein,,,
+PC2,-0.081,GWK47_046958,PRSS55,Serine protease 55,Q28661,Vitamin K-dependent protein C (EC 3.4.21.69) (Anticoagulant protein C) (Autoprothrombin IIA) (Blood coagulation factor XIV) [Cleaved into: Vitamin K-dependent protein C light chain; Vitamin K-dependent protein C heavy chain; Activation peptide],3.76E-23
+PC2,-0.078,GWK47_019251,MUCB1,Integumentary mucin B.1,,,
+PC2,-0.078,GWK47_012168,,hypothetical protein,,,
+PC2,-0.071,GWK47_039428,,hypothetical protein,,,
+PC2,-0.070,GWK47_002621,,hypothetical protein,,,
+PC2,-0.062,GWK47_024287,,hypothetical protein,,,
+PC2,-0.056,GWK47_015055,ALF_2,Anti-lipopolysaccharide factor,C0KJQ4,Anti-lipopolysaccharide factor (PtALF),4.83E-25
+PC2,-0.054,GWK47_051099,CPB1,Carboxypeptidase B,P00732,Carboxypeptidase B (EC 3.4.17.2),4.61E-21
+PC2,-0.054,GWK47_044097,,Protein ALP1-like,Q9M2U3,Protein ALP1-like (EC 3.1.-.-),2.24E-17
+PC2,-0.054,GWK47_022413,,hypothetical protein,,,
+PC2,-0.053,GWK47_029635,Cpm_3,Carboxypeptidase M,Q80V42,Carboxypeptidase M (CPM) (EC 3.4.17.12),1.35E-122
+PC2,-0.052,GWK47_050744,ovo,Transcriptional regulator ovo,P51521,Transcriptional regulator ovo (Transcriptional repressor shavenbaby) (Transcriptional repressor svb) [Cleaved into: Transcriptional activator shavenbaby (Transcriptional activator svb)],8.69E-41
+PC2,-0.051,GWK47_044956,,hypothetical protein,,,
+PC2,-0.051,GWK47_013481,LEC1,C-type lectin,C6JUN9,C-type lectin (CTL),5.53E-20
+PC2,-0.051,GWK47_018395,MRC1_0,Macrophage mannose receptor 1,Q9UBG0,C-type mannose receptor 2 (C-type lectin domain family 13 member E) (Endocytic receptor 180) (Macrophage mannose receptor 2) (Urokinase-type plasminogen activator receptor-associated protein) (UPAR-associated protein) (Urokinase receptor-associated protein) (CD antigen CD280),6.12E-30
+PC2,-0.051,GWK47_035746,,hypothetical protein,,,
+PC2,-0.051,GWK47_012393,mas,Protein masquerade,Q9VZH2,Protein masquerade,1.85E-152
+PC2,-0.050,GWK47_005843,Ldlrad3,Low-density lipoprotein receptor class A domain-containing protein 3,,,
+PC2,-0.049,GWK47_028697,Nep2_0,Neprilysin-2,A0A0B4K692,"Neprilysin-2 (EC 3.4.24.11) [Cleaved into: Neprilysin-2, soluble form]",1.04E-175
+PC2,-0.049,GWK47_004076,,hypothetical protein,,,
+PC2,-0.049,GWK47_037408,ANPEP_2,Aminopeptidase Ey,O57579,Aminopeptidase Ey (EC 3.4.11.20) (Aminopeptidase N),2.21E-38
+PC2,-0.049,GWK47_025690,Malrd1_2,MAM and LDL-receptor class A domain-containing protein 1,H9J9M0,Chitin deacetylase 1 (BmCDA1) (EC 3.5.1.41),6.21E-147
+PC2,-0.048,GWK47_034065,,hypothetical protein,,,
+PC2,-0.048,GWK47_043407,,hypothetical protein,,,
+PC2,-0.048,GWK47_016603,,hypothetical protein,,,
+PC2,-0.048,GWK47_006061,LRP1_1,Prolow-density lipoprotein receptor-related protein 1,,,
+PC2,-0.047,GWK47_018134,Phm,Peptidylglycine alpha-hydroxylating monooxygenase,O01404,Peptidylglycine alpha-hydroxylating monooxygenase (dPHM) (EC 1.14.17.3),1.70E-60
+PC2,-0.047,GWK47_039354,,Proton channel OtopLc,B7Z0W9,Proton channel OtopLc (Otopetrin-Lc) (DmOtopLc),2.49E-23
+PC2,-0.046,GWK47_028696,Nep2_1,Neprilysin-2,A0A0B4K692,"Neprilysin-2 (EC 3.4.24.11) [Cleaved into: Neprilysin-2, soluble form]",5.80E-54
+PC2,-0.044,GWK47_043346,olpB_2,Cell surface glycoprotein 1,O18023,Ig-like and fibronectin type-III domain-containing protein 2,3.76E-32
+PC2,-0.042,GWK47_018133,pghm-1,putative peptidylglycine alpha-hydroxylating monooxygenase 1,Q95XM2,Probable peptidylglycine alpha-hydroxylating monooxygenase 1 (PHM) (EC 1.14.17.3),2.24E-23
+PC2,-0.042,GWK47_046633,Lrp2_3,Low-density lipoprotein receptor-related protein 2,,,
+PC2,-0.041,GWK47_035747,,hypothetical protein,,,
+PC2,-0.041,GWK47_025788,,hypothetical protein,,,
+PC2,-0.041,GWK47_029129,lrp-1_1,Low-density lipoprotein receptor-related protein,P98164,Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin),1.90E-53
+PC2,-0.041,GWK47_049593,Pnlip_1,Pancreatic triacylglycerol lipase,Q6P8U6,Pancreatic triacylglycerol lipase (PL) (PTL) (Pancreatic lipase) (EC 3.1.1.3),1.84E-85
+PC2,-0.040,GWK47_005844,,hypothetical protein,,,
+PC2,-0.040,GWK47_004077,Ttn_1,Titin,,,
+PC2,-0.039,GWK47_029130,Lrp2_1,Low-density lipoprotein receptor-related protein 2,C0HL13,Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin),1.17E-93
+PC2,-0.039,GWK47_048101,,hypothetical protein,,,
+PC2,-0.039,GWK47_028694,,hypothetical protein,,,
+PC2,-0.039,GWK47_033199,,hypothetical protein,,,
+PC2,-0.039,GWK47_054931,pip_0,Heparan sulfate 2-O-sulfotransferase pipe,Q86BJ3,Uronyl 2-sulfotransferase homolog pip (UST) (EC 2.8.2.-) (Heparan sulfate 2-O-sulfotransferase pipe) (Protein pipe),8.72E-75
+PC2,-0.038,GWK47_020793,CSGALNACT2,Chondroitin sulfate N-acetylgalactosaminyltransferase 2,Q8N6G5,"Chondroitin sulfate N-acetylgalactosaminyltransferase 2 (EC 2.4.1.174) (Chondroitin beta-1,4-N-acetylgalactosaminyltransferase 2) (Beta4GalNAcT-2) (GalNAcT-2)",5.82E-128
+PC2,-0.038,GWK47_002915,CHST11,Carbohydrate sulfotransferase 11,,,
+PC2,-0.037,GWK47_020942,,hypothetical protein,,,
+PC2,-0.037,GWK47_026454,TGFBI,Transforming growth factor-beta-induced protein ig-h3,P55906,Transforming growth factor-beta-induced protein ig-h3 (Beta ig-h3) (MP70) (MP78),2.15E-47
+PC2,-0.037,GWK47_014258,,hypothetical protein,,,
+PC2,-0.035,GWK47_023390,gxylt1_0,Glucoside xylosyltransferase 1,Q5SP46,Glucoside xylosyltransferase 1 (EC 2.4.2.42) (Glycosyltransferase 8 domain-containing protein 3),2.16E-48
+PC2,-0.035,GWK47_049966,Fasn,Fatty acid synthase,P12785,Fatty acid synthase (EC 2.3.1.85) (Type I FAS) [Includes: [Acyl-carrier-protein] S-acetyltransferase (EC 2.3.1.38); [Acyl-carrier-protein] S-malonyltransferase (EC 2.3.1.39); 3-oxoacyl-[acyl-carrier-protein] synthase (EC 2.3.1.41); 3-oxoacyl-[acyl-carrier-protein] reductase (EC 1.1.1.100); 3-hydroxyacyl-[acyl-carrier-protein] dehydratase (EC 4.2.1.59); Enoyl-[acyl-carrier-protein] reductase (EC 1.3.1.39); Acyl-[acyl-carrier-protein] hydrolase (EC 3.1.2.14)],0.00E+00
+PC2,-0.035,GWK47_005236,Fbxl7,F-box/LRR-repeat protein 7,Q5BJ29,F-box/LRR-repeat protein 7 (F-box and leucine-rich repeat protein 7),2.09E-47
+PC2,-0.035,GWK47_027062,,hypothetical protein,,,
+PC2,-0.035,GWK47_013925,,C-type lectin 37Da,,,

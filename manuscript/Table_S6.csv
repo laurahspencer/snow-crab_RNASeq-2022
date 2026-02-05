@@ -1,0 +1,31 @@
+gene_set,category,process,genes,count,list_total,pop_hits,pop_total,p_value,benjamini,fold_enrichment,bonferroni,fdr,fisher_exact,time,oa,response
+PC1 Top 1% Negative Loadings,GO Biological Process Term,protein refolding,25.00%,8,30,15,5659,2.66E-13,5.37E-11,100.6,5.37E-11,4.92E-11,1.41E-15,,,
+PC1 Top 1% Negative Loadings,GO Biological Process Term,chaperone cofactor-dependent protein refolding,21.88%,7,30,18,5659,1.86E-10,1.88E-08,73.36,3.75E-08,1.72E-08,1.70E-12,,,
+PC1 Top 1% Negative Loadings,GO Biological Process Term,cellular response to unfolded protein,9.38%,3,30,8,5659,0.000697,0.0469,70.74,0.131,0.043,7.40E-06,,,
+PC1 Top 1% Negative Loadings,Uniprot Biological Process Keyword,Stress response,28.13%,9,22,45,3543,6.36E-11,1.59E-09,32.21,1.59E-09,1.59E-09,1.63E-12,,,
+PC1 Top 1% Positive Loadings,GO Biological Process Term,vitamin K metabolic process,9.68%,3,29,4,5659,0.000141,0.0275,146.35,0.0271,0.0268,4.82E-07,,,
+PC1 Top 1% Positive Loadings,GO Biological Process Term,triglyceride catabolic process,9.68%,3,29,6,5659,0.00035,0.0285,97.57,0.066,0.0277,2.40E-06,,,
+PC1 Top 1% Positive Loadings,GO Biological Process Term,lipid metabolic process,19.35%,6,29,134,5659,0.000438,0.0285,8.74,0.0819,0.0277,4.78E-05,,,
+PC2 Top 1% Negative Loadings,GO Biological Process Term,peptide metabolic process,12.00%,3,24,7,5659,0.000328,0.0416,101.05,0.0408,0.038,2.32E-06,,,
+PC2 Top 1% Negative Loadings,GO Biological Process Term,proteolysis,24.00%,6,24,206,5659,0.0012,0.0761,6.87,0.141,0.0695,0.000168,,,
+PC2 Top 1% Positive Loadings,GO Biological Process Term,vitamin K metabolic process,11.11%,3,23,4,5659,8.62E-05,0.0109,184.53,0.0108,0.0103,2.34E-07,,,
+PC2 Top 1% Positive Loadings,GO Biological Process Term,positive regulation of reactive oxygen species metabolic process,11.11%,3,23,11,5659,0.000777,0.0489,67.1,0.0933,0.0466,9.48E-06,,,
+"Moderate OA 8hr, Higher Expression",Uniprot Biological Process Keyword,Respiratory chain,8.70%,4,28,24,3543,0.000718,0.0244,21.09,0.0241,0.0244,2.98E-05,short,mod,up
+"Moderate OA 8hr, Higher Expression",Uniprot Biological Process Keyword,Electron transport,8.70%,4,28,49,3543,0.00576,0.0979,10.33,0.178,0.0979,0.000518,short,mod,up
+"Severe OA 8hr, Higher Expression",GO Biological Process Term,mitochondrial translation,6.81%,19,264,60,5659,9.17E-11,8.22E-08,6.79,8.22E-08,8.22E-08,9.84E-12,short,sev,up
+"Severe OA 8hr, Higher Expression",Uniprot Biological Process Keyword,Respiratory chain,3.23%,9,161,24,3543,5.76E-06,0.000438,8.25,0.000438,0.000438,4.81E-07,short,sev,up
+"Severe OA 8hr, Higher Expression",Uniprot Biological Process Keyword,Electron transport,3.94%,11,161,49,3543,4.76E-05,0.00181,4.94,0.00361,0.00181,7.88E-06,short,sev,up
+"Severe OA 8hr, Higher Expression",Uniprot Biological Process Keyword,Protein biosynthesis,5.02%,14,161,107,3543,0.000893,0.0226,2.88,0.0656,0.0226,0.000277,short,sev,up
+"Severe OA 8hr, Lower Expression",GO Biological Process Term,cell adhesion,7.59%,12,155,90,5659,2.77E-05,0.0219,4.87,0.0272,0.0219,5.04E-06,short,sev,down
+"Severe OA 8hr, Lower Expression",GO Biological Process Term,lipid transport,5.70%,9,155,49,5659,4.38E-05,0.0219,6.71,0.0428,0.0219,5.53E-06,short,sev,down
+"Severe OA 8hr, Lower Expression",GO Biological Process Term,response to endoplasmic reticulum stress,5.06%,8,155,44,5659,0.000159,0.0527,6.64,0.146,0.0527,2.03E-05,short,sev,down
+"Severe OA 8hr, Lower Expression",Uniprot Biological Process Keyword,Cell adhesion,7.59%,12,108,99,3543,0.000155,0.00944,3.98,0.0094,0.00929,3.49E-05,short,sev,down
+"Severe OA 8hr, Lower Expression",Uniprot Biological Process Keyword,Lipid transport,6.33%,10,108,82,3543,0.000693,0.0212,4,0.0414,0.0208,0.000155,short,sev,down
+"Both OA 8hr, High Expression",Uniprot Biological Process Keyword,Respiratory chain,17.65%,3,11,24,3543,0.00191,0.0383,40.26,0.0376,0.0383,4.35E-05,short,,up
+"Both OA 8hr, High Expression",Uniprot Biological Process Keyword,Electron transport,17.65%,3,11,49,3543,0.00786,0.0786,19.72,0.146,0.0786,0.00038,short,,up
+"Day 88, higher in severe vs. moderate",GO Biological Process Term,mRNA processing,17.57%,13,74,139,5659,1.53E-07,5.72E-05,7.15,5.72E-05,5.72E-05,1.96E-08,long,,up
+"Day 88, higher in severe vs. moderate",GO Biological Process Term,RNA splicing,14.86%,11,74,103,5659,6.15E-07,9.19E-05,8.17,0.00023,9.19E-05,6.82E-08,long,,up
+"Day 88, higher in severe vs. moderate",GO Biological Process Term,"mRNA splicing, via spliceosome",14.86%,11,74,105,5659,7.37E-07,9.19E-05,8.01,0.000276,9.19E-05,8.35E-08,long,,up
+"Day 88, higher in severe vs. moderate",Uniprot Biological Process Keyword,mRNA splicing,22.97%,17,60,146,3543,7.30E-10,3.21E-08,6.88,3.21E-08,3.21E-08,9.55E-11,long,,up
+"Day 88, higher in severe vs. moderate",Uniprot Biological Process Keyword,mRNA processing,24.32%,18,60,192,3543,5.53E-09,1.22E-07,5.54,2.43E-07,1.22E-07,9.18E-10,long,,up
+"Day 88, higher in severe vs. moderate, large effect (L2FC>0.5)",Uniprot Biological Process Keyword,Stress response,23.53%,4,13,45,3543,0.000389,0.0101,24.23,0.0101,0.0101,1.49E-05,long,,up
