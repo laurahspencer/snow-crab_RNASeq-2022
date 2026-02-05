@@ -12,7 +12,8 @@ This repository contains the RNA-seq analysis workflow for a 2022 ocean acidific
 * This is a complementary study to the [Long et al. 2026](https://doi.org/10.1016/j.jembe.2025.152153).
 * Raw data is available on NCBI SRA under [BioProject PRJNA1419231](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1419231).
 * The manuscript has been submitted to Journal of Experimental Biology and is available as a pre-print on BioRxiv, ID: BIORXIV/2026/703865 (link TBD).
-* Expression data is available to explore! Check out this interactive app where you can search for genes by name, protein name, GO term, Uniprot SPID and visualize expression by treatment via boxplots, and PCA, by either downloading the subdirectory [snow_crab_expression_explorer/](https://github.com/laurahspencer/snow-crab_RNASeq-2022/tree/main/snow_crab_expression_explorer) and following directions listed on that repo, OR use the online version: [Snow Crab Ocean Acidification Gene Expression Explorer](https://i0o16k-laura0h0spencer.shinyapps.io/snow\_crab\_expression\_explorer/). 
+* Expression data is available to explore! Check out this interactive app where you can search for genes by name, protein name, GO term, Uniprot SPID and visualize expression by treatment via boxplots, and PCA, by either downloading the subdirectory [snow_crab_expression_explorer/](https://github.com/laurahspencer/snow-crab_RNASeq-2022/tree/main/snow_crab_expression_explorer) and following directions listed on that repo, OR use the online version: [Snow Crab Ocean Acidification Gene Expression Explorer](https://i0o16k-laura0h0spencer.shinyapps.io/snow\_crab\_expression\_explorer/).
+* Here is a Google Sheet with lists of DEGs, genes with top PC loadings: https://docs.google.com/spreadsheets/d/1wZ32GN-zT5lpuEgUaaFvXcN_qEDqaaRvaAMcDDT74yc/edit?usp=sharing
 
 ---
 
