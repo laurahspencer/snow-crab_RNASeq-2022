@@ -1,0 +1,37 @@
+                                 Started job on |	Oct 19 20:49:27
+                             Started mapping on |	Oct 19 20:49:43
+                                    Finished on |	Oct 19 22:03:27
+       Mapping speed, Million of reads per hour |	89.98
+
+                          Number of input reads |	110581390
+                      Average input read length |	309
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |	60709257
+                        Uniquely mapped reads % |	54.90%
+                          Average mapped length |	302.35
+                       Number of splices: Total |	48983555
+            Number of splices: Annotated (sjdb) |	23427452
+                       Number of splices: GT/AG |	47460028
+                       Number of splices: GC/AG |	557972
+                       Number of splices: AT/AC |	6077
+               Number of splices: Non-canonical |	959478
+                      Mismatch rate per base, % |	1.11%
+                         Deletion rate per base |	0.09%
+                        Deletion average length |	2.54
+                        Insertion rate per base |	0.07%
+                       Insertion average length |	2.00
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |	19703668
+             % of reads mapped to multiple loci |	17.82%
+        Number of reads mapped to too many loci |	191572
+             % of reads mapped to too many loci |	0.17%
+                                  UNMAPPED READS:
+  Number of reads unmapped: too many mismatches |	0
+       % of reads unmapped: too many mismatches |	0.00%
+            Number of reads unmapped: too short |	24645621
+                 % of reads unmapped: too short |	22.29%
+                Number of reads unmapped: other |	5331272
+                     % of reads unmapped: other |	4.82%
+                                  CHIMERIC READS:
+                       Number of chimeric reads |	0
+                            % of chimeric reads |	0.00%
