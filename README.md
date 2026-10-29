@@ -9,6 +9,7 @@ Laura H Spencer1,3, Ingrid Spies3, Jennifer L. Gardner2, Steven Roberts1, W. Chr
 
 This repository contains the RNA-seq analysis workflow for a 2022 ocean acidification experiment in juvenile snow crab (_Chionoecetes opilio_). The goal of this project was to characterize short- and long-term transcriptional responses to reduced pH in an OA-tolerant species.
 
+* Now published in [Frontiers in Marine Science](https://www.frontiersin.org/journals/marine-science/articles/10.3389/fmars.2026.1845346/full)
 * This is a complementary study to the [Long et al. 2026](https://doi.org/10.1016/j.jembe.2025.152153).
 * Raw data is available on NCBI SRA under [BioProject PRJNA1419231](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1419231).
 * The manuscript has been submitted to Journal of Experimental Biology and is available as a pre-print on BioRxiv, ID: BIORXIV/2026/703865 (link TBD).
